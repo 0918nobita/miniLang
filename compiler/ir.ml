@@ -107,35 +107,6 @@ let insts_of_expr_ast ast names params =
           | None ->
               raise @@ Unbound_value (loc, ident)
         end
-    | Nil _ -> [I32Const 0]
-    | Cons (_, car, cdr) ->
-        inner (cdr, ctx) @     (* [i32 <- cdr に書き込むアドレス *)
-        [ Call 3 (* push *)    (* [ *)
-        ; I32Const 8           (* [i32 *)
-        ; Call 1 (* malloc *)  (* [i32 *)
-        ; Call 3 (* push *)    (* [ *)
-        ; Call 5 (* top *)     (* [i32 *)
-        ] @
-        inner (car, ctx) @     (* [i32 i32 *)
-        [ I32Store             (* [ *)
-        ; Call 5 (* top *)     (* [i32 <- 戻り値 *)
-        ; Call 4 (* pop *)     (* [i32 i32 *)
-        ; I32Const 4           (* [i32 i32 i32 *)
-        ; I32Add               (* [i32 i32 *)
-        ; Call 4 (* pop *)     (* [i32 i32 i32 *)
-        ; I32Store             (* [i32 *)
-        ]
-    | ListAccessor (_, list, index) ->
-        inner (list, ctx) @
-        inner (index, ctx) @
-        [ Call 6 (* nth *) ]
-    | ListLiteral (loc, list) ->
-        if List.length list = 0
-          then
-            inner (Nil loc, ctx)
-          else
-            inner (List.fold_right (fun car cdr ->
-              Cons (loc_of_expr_ast car, car, cdr)) list (Nil loc), ctx)
   in
   let max_depth = ref (-1) in
   let body = inner (ast, { env = []; depth = -1; max_depth; params }) in
