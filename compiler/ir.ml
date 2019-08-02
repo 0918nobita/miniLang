@@ -103,7 +103,7 @@ let insts_of_expr_ast ast names params =
     | Funcall (loc, ident, asts) ->
         begin match Base.List.findi names ~f:(fun _ -> (=) ident) with
           | Some (index, _) ->
-              Base.List.concat_map asts ~f:(fun ast -> inner (ast, ctx)) @ [Call (index + 7)]
+              Base.List.concat_map asts ~f:(fun ast -> inner (ast, ctx)) @ [Call (index + 6)]
           | None ->
               raise @@ Unbound_value (loc, ident)
         end
