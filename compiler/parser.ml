@@ -18,7 +18,7 @@ type expr_ast =
   | GreaterE of location * expr_ast * expr_ast
   | And of location * expr_ast * expr_ast
   | Or of location * expr_ast * expr_ast
-  | If of location * expr_ast * expr_ast * expr_ast
+  | IfElse of location * expr_ast * expr_ast * expr_ast
   | Let of location * ident * expr_ast * expr_ast
   | Funcall of location * string * (expr_ast list)
 
@@ -119,7 +119,7 @@ let loc_of_expr_ast = function
   | GreaterE (loc, _, _) -> loc
   | And (loc, _, _) -> loc
   | Or (loc, _, _) -> loc
-  | If (loc, _, _, _) -> loc
+  | IfElse (loc, _, _, _) -> loc
   | Let (loc, _, _, _) -> loc
   | Funcall (loc, _, _) -> loc
 
@@ -178,7 +178,7 @@ let rec factor () =
           >> spaces
           >> logical_expr_or ()
           >>= (fun else_clause ->
-            return @@ If (loc, cond, then_clause, else_clause))))))
+            return @@ IfElse (loc, cond, then_clause, else_clause))))))
   in
   let let_expr = Parser (function (loc, _) as input ->
     input

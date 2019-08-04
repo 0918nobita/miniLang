@@ -21,7 +21,7 @@ type instruction =
   | GetLocalVar of int
   | I32Load
   | I32Store
-  | Call of string
+  | CallFunc of string
   | GetLocal of int
 
 type context =
@@ -62,7 +62,7 @@ let insts_of_expr_ast ~expr_ast ~fn_names ~params ~called_internals =
         inner (lhs, ctx) @ [I32Eqz; I32If ([I32Const 0], inner (rhs, ctx))]
     | Or (_, lhs, rhs) ->
         inner (lhs, ctx) @ [I32Local [TeeLocal 0; I32Eqz; I32If (inner (rhs, ctx), [GetLocalVar 0])]]
-    | If (_, cond, t, e) ->
+    | IfElse (_, cond, t, e) ->
         inner (cond, ctx) @ [I32Eqz; I32If (inner (e, ctx), inner (t, ctx))]
     | Let (_, (_, ident), bound_expr, expr) ->
         let depth = ctx.depth + 1 in
@@ -71,12 +71,12 @@ let insts_of_expr_ast ~expr_ast ~fn_names ~params ~called_internals =
         let ctx_for_expr = { ctx with env = (ident, depth) :: ctx.env; depth } in
         if depth = 0
           then
-            Call "top"
+            CallFunc "top"
             :: inner (bound_expr, ctx_for_bound_expr)
             @ I32Store
             :: inner (expr, ctx_for_expr)
           else
-            Call "top"
+            CallFunc "top"
             :: I32Const (4 * depth)
             :: I32Add
             :: inner (bound_expr, ctx_for_bound_expr)
@@ -98,13 +98,13 @@ let insts_of_expr_ast ~expr_ast ~fn_names ~params ~called_internals =
             else
               if List.hd addrs = 0
                 then
-                  [Call "top"; I32Load]
+                  [CallFunc "top"; I32Load]
                 else
-                  [Call "top"; I32Const (List.hd addrs * 4);  I32Add; I32Load]
+                  [CallFunc "top"; I32Const (List.hd addrs * 4);  I32Add; I32Load]
     | Funcall (loc, ident, asts) ->
         begin match Base.List.exists fn_names ~f:((=) ident) with
           | true ->
-              Base.List.concat_map asts ~f:(fun ast -> inner (ast, ctx)) @ [Call ident]
+              Base.List.concat_map asts ~f:(fun ast -> inner (ast, ctx)) @ [CallFunc ident]
           | false ->
               raise @@ Unbound_value (loc, ident)
         end
@@ -115,7 +115,7 @@ let insts_of_expr_ast ~expr_ast ~fn_names ~params ~called_internals =
     let [@warning "-8"] (* Partial match *)
       rec inner list = function
       | [] -> ()
-      | Call ident :: tail ->
+      | CallFunc ident :: tail ->
           if List.exists ((=) ident) list
             then inner list tail
             else called_internals := ident :: (!called_internals)
@@ -124,7 +124,7 @@ let insts_of_expr_ast ~expr_ast ~fn_names ~params ~called_internals =
     inner []
   in
   let body = if !max_depth > (-1)
-    then [I32Const (4 * (!max_depth + 1)); Call "malloc"; Call "push"] @ body @ [Call "pop"; Call "free"]
+    then [I32Const (4 * (!max_depth + 1)); CallFunc "malloc"; CallFunc "push"] @ body @ [CallFunc "pop"; CallFunc "free"]
     else body
   in
   check_called_internals body;
@@ -195,7 +195,7 @@ let bin_of_insts ~insts ~num_params ~fn_names =
         2 :: (* alignment *)
         0 :: (* store offset *)
         inner (tail, current, max)
-    | Call ident :: tail ->
+    | CallFunc ident :: tail ->
         16 :: (* opcode *)
         fst (unwrap (Base.List.findi fn_names ~f:(fun _ -> (=) ident))) ::
         inner (tail, current, max)
