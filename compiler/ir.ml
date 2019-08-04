@@ -3,6 +3,7 @@ open Parser
 open Wasm
 open Wast
 open Free
+open Stack_func
 
 type instruction =
   | I32Const of int
@@ -225,27 +226,9 @@ let hidden_functions =
     ; code = [2; 64; 3; 64; 32; 1; 40; 2; 0; 33; 1; 32; 1; 65; 4; 106; 40; 2; 0; 32; 0; 107; 33; 4; 32; 4; 65; 0; 74; 4; 64; 32; 1; 32; 1; 65; 4; 106; 40; 2; 0; 106; 32; 0; 65; 8; 106; 107; 33; 3; 65; 4; 32; 3; 106; 32; 0; 54; 2; 0; 32; 1; 65; 4; 106; 32; 1; 65; 4; 106; 40; 2; 0; 32; 0; 65; 8; 106; 107; 54; 2; 0; 32; 3; 65; 8; 106; 15; 11; 32; 4; 69; 4; 64; 2; 64; 3; 64; 32; 2; 40; 2; 0; 33; 2; 32; 2; 40; 2; 0; 32; 1; 70; 4; 64; 32; 2; 32; 1; 40; 2; 0; 54; 2; 0; 32; 1; 15; 11; 32; 2; 40; 2; 0; 65; 0; 71; 13; 0; 11; 0; 11; 11; 32; 1; 40; 2; 0; 65; 0; 71; 13; 0; 11; 11; 0]
     }
   ; free
-  ; Func (* push *)
-    { signature = { params = 1; results = 0}
-    ; locals = 0
-    ; code = bin_of_wasm_insts
-      [ I32_store ([Get_global 0], [Get_local 0])
-      ; Set_global (0, [I32_sub ([Get_global 0], [I32_const 4])])
-      ]
-    }
-  ; Func (* pop *)
-    { signature = { params = 0; results = 1}
-    ; locals = 0
-    ; code = bin_of_wasm_insts
-      [ Set_global (0, [I32_add ([Get_global 0], [I32_const 4])])
-      ; I32_load [Get_global 0]
-      ]
-    }
-  ; Func (* top *)
-    { signature = { params = 0; results = 1}
-    ; locals = 0
-    ; code = bin_of_wasm_insts [ I32_load [I32_add ([Get_global 0], [I32_const 4])] ]
-    }
+  ; push
+  ; pop_func
+  ; top
   ]
 
 let wasm_func_list_of_stmts ~stmts =
