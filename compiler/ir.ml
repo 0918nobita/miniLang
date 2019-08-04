@@ -221,7 +221,73 @@ let hidden_functions =
   ; Func (* free *)
     { signature = { params = 1; results = 0}
     ; locals = 3
-    ; code = [32; 0; 65; 8; 107; 33; 1; 2; 64; 3; 64; 32; 2; 40; 2; 0; 33; 2; 32; 2; 32; 1; 74; 4; 64; 32; 3; 32; 1; 54; 2; 0; 32; 2; 32; 1; 32; 1; 65; 4; 106; 40; 2; 0; 106; 65; 8; 106; 70; 4; 64; 32; 1; 32; 2; 40; 2; 0; 54; 2; 0; 32; 1; 65; 4; 106; 32; 1; 65; 4; 106; 40; 2; 0; 65; 8; 106; 32; 2; 65; 4; 106; 40; 2; 0; 106; 54; 2; 0; 5; 32; 1; 32; 2; 54; 2; 0; 11; 15; 11; 32; 2; 33; 3; 32; 2; 40; 2; 0; 65; 0; 71; 13; 0; 11; 32; 3; 32; 1; 54; 2; 0; 11]
+    ; code = bin_of_wasm_insts
+      [ Get_local 0
+      ; I32_const 8
+      ; I32_sub
+      ; Set_local 1
+      ; Block Void
+        ; Loop Void
+          ; Get_local 2
+          ; I32_load
+          ; Set_local 2
+          ; Get_local 2
+          ; Get_local 1
+          ; I32_gt
+          ; If Void
+            ; Get_local 3
+            ; Get_local 1
+            ; I32_store
+            ; Get_local 2
+            ; Get_local 1
+            ; Get_local 1
+            ; I32_const 4
+            ; I32_add
+            ; I32_load
+            ; I32_add
+            ; I32_const 8
+            ; I32_add
+            ; I32_eq
+            ; If Void
+              ; Get_local 1
+              ; Get_local 2
+              ; I32_load
+              ; I32_store
+              ; Get_local 1
+              ; I32_const 4
+              ; I32_add
+              ; Get_local 1
+              ; I32_const 4
+              ; I32_add
+              ; I32_load
+              ; I32_const 8
+              ; I32_add
+              ; Get_local 2
+              ; I32_const 4
+              ; I32_add
+              ; I32_load
+              ; I32_add
+              ; I32_store
+            ; Else
+              ; Get_local 1
+              ; Get_local 2
+              ; I32_store
+            ; End
+            ; Return
+          ; End
+          ; Get_local 2
+          ; Set_local 3
+          ; Get_local 2
+          ; I32_load
+          ; I32_const 0
+          ; I32_ne
+          ; Br_if 0
+        ; End
+        ; Get_local 3
+        ; Get_local 1
+        ; I32_store
+      ; End
+      ]
     }
   ; Func (* push *)
     { signature = { params = 1; results = 0}
