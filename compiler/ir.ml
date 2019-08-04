@@ -211,7 +211,12 @@ let hidden_functions =
   [ Func (* init *)
     { signature = { params = 0; results = 0}
     ; locals = 0
-    ; code = [65; 0; 65; 8; 54; 2; 0; 65; 4; 65; 0; 54; 2; 0; 65; 8; 65; 0; 54; 2; 0; 65; 12; 65; 202; 215; 2; 54; 2; 0]
+    ; code = bin_of_wasm_insts
+      [ I32_store ([I32_const 0], [I32_const 8])
+      ; I32_store ([I32_const 4], [I32_const 0])
+      ; I32_store ([I32_const 8], [I32_const 0])
+      ; I32_store ([I32_const 12], [I32_const 43978])
+      ]
     }
   ; Func (* malloc *)
     { signature = { params = 1; results = 1}
