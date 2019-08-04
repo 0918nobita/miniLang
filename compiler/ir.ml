@@ -1,6 +1,7 @@
 open Parser_combinator
 open Parser
 open Wasm
+open Wast
 
 type instruction =
   | I32Const of int
@@ -236,7 +237,12 @@ let hidden_functions =
   ; Func (* top *)
     { signature = { params = 0; results = 1}
     ; locals = 0
-    ; code = [35; 0; 65; 4; 106; 40; 2; 0]
+    ; code = bin_of_wasm_insts
+      [ Get_global 0
+      ; I32_const 4
+      ; I32_add
+      ; I32_load
+      ]
     }
   ]
 
