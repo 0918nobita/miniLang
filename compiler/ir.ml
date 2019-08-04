@@ -226,8 +226,15 @@ let hidden_functions =
   ; Func (* push *)
     { signature = { params = 1; results = 0}
     ; locals = 0
-    ; code =
-      [35; 0; 32; 0; 54; 2; 0; 35; 0; 65; 4; 107; 36; 0]
+    ; code = bin_of_wasm_insts
+      [ Get_global 0
+      ; Get_local 0
+      ; I32_store
+      ; Get_global 0
+      ; I32_const 4
+      ; I32_sub
+      ; Set_global 0
+      ]
     }
   ; Func (* pop *)
     { signature = { params = 0; results = 1}
