@@ -59,7 +59,7 @@ let syntax_error isREPL src loc =
     print_endline @@ string_of_loc loc ^ ": Syntax Error"
   end
 
-let duplicate_export isREPL src loc =
+let duplicate_func isREPL src loc =
   begin
     if isREPL = false then print_endline @@ List.nth (String.split_on_char '\n' src) loc.line;
     print_endline @@ String.make loc.chr ' ' ^ "^";
@@ -73,10 +73,12 @@ let unbound_value isREPL src loc ident =
     print_endline @@ string_of_loc loc ^ ": Unbound value `" ^ ident ^ "`"
   end
 
+let version = "0.0.2"
+
 let () =
   if Array.length Sys.argv = 1
     then
-      print_string @@
+      print_endline @@
         "    ____                  __\n" ^
         "   / __ \\_______  _______/ /_  ___\n" ^
         "  / /_/ / ___/ / / / ___/ __ \\/ _ \\\n" ^
@@ -84,7 +86,7 @@ let () =
         "/_/   /____/\\__, /\\___/_/ /_/\\___/\n" ^
         "           /____/\n\n" ^
         "A WASM friendly lightweight programming language\n" ^
-        "Version 0.0.1\n"
+        "Version " ^ version
     else
       match Sys.argv.(1) with
         | "make" ->
@@ -101,7 +103,7 @@ let () =
                       end
                   | Duplicate_func loc ->
                       begin
-                        duplicate_export false input loc;
+                        duplicate_func false input loc;
                         exit (-1)
                       end
                   | Unbound_value (loc, ident) ->
