@@ -31,6 +31,7 @@ type wasm_inst =
   | Set_local of int
   | I32_store
   | I32_load
+  | Return
 
 let bin_of_return_type = function
   | I32 -> 127
@@ -65,4 +66,5 @@ let bin_of_wasm_insts insts =
       | Get_local index -> 32 :: leb128_of_int index
       | Set_local index -> 33 :: leb128_of_int index
       | I32_store -> [54; 2 (* alignment *); 0 (* store offset *)]
-      | I32_load -> [40; 2 (* alignment *); 0 (* load offset *)])
+      | I32_load -> [40; 2 (* alignment *); 0 (* load offset *)]
+      | Return -> [15])
