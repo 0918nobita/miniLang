@@ -1,5 +1,7 @@
 open Parser_combinator
 
+let digit_char = oneOf "0123456789"
+
 let version = "0.0.2"
 
 let () =
