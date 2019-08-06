@@ -35,7 +35,7 @@ type context =
 
 exception Unbound_value of location * string
 
-let insts_of_expr_ast ~expr_ast ~fn_names ~params ~called_internals =
+let insts_of_expr_ast ~expr_ast ~fn_names ~params =
   let rec inner (expr_ast, ctx) = match expr_ast with
     | IntLiteral (_, n) -> [I32Const n]
     | Minus (_, expr) ->
@@ -113,23 +113,10 @@ let insts_of_expr_ast ~expr_ast ~fn_names ~params ~called_internals =
   in
   let max_depth = ref (-1) in
   let body = inner (expr_ast, { env = []; depth = -1; max_depth; ctx_params = params }) in
-  let check_called_internals =
-    let [@warning "-8"] (* Partial match *)
-      rec inner list = function
-      | [] -> ()
-      | CallFunc ident :: tail ->
-          if List.exists ((=) ident) list
-            then inner list tail
-            else called_internals := ident :: (!called_internals)
-      | _ :: tail -> inner list tail
-    in
-    inner []
-  in
   let body = if !max_depth > (-1)
     then [I32Const (4 * (!max_depth + 1)); CallFunc "malloc"; CallFunc "push"] @ body @ [CallFunc "pop"; CallFunc "free"]
     else body
   in
-  check_called_internals body;
   body
 
 let unwrap = function
@@ -222,7 +209,6 @@ let wasm_func_list_of_stmts ~stmts =
     ["init"; "malloc"; "free"; "push"; "pop"; "top"]
     @ List.map (function FuncDef (_, _, (_, name), _, _) -> name) stmts
   in
-  let called_internals = ref [] in
   let insts_list =
     stmts
     |> List.map (
@@ -234,7 +220,6 @@ let wasm_func_list_of_stmts ~stmts =
           ~expr_ast
           ~fn_names
           ~params
-          ~called_internals
         ))
   in
   hidden_functions
