@@ -6,6 +6,11 @@ let letter = satisfy (fun (_, c) ->
   let code = Char.code c in
     (65 <= code && code <= 90) || (97 <= code && code <= 122))
 
+let identifier =
+  (fun (loc, c) results -> (loc, Base.String.of_char_list (c :: List.map snd results)))
+  <$> letter
+  <*> (many (letter <|> digit_char))
+
 let version = "0.0.2"
 
 let () =
