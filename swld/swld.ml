@@ -56,6 +56,22 @@ let instruction = Parser (function (loc, _) as input ->
       >> newline
       >> return @@ I32_const (loc, num))))
 
+let func_def = Parser (function (loc, _) as input ->
+  input
+  |> parse (
+    token "function"
+    >> spaces
+    >> identifier
+    >>= (fun ident ->
+      spaces_opt
+      >> newline
+      >> many instruction
+      >>= (fun insts -> spaces_opt
+        >> token "endfunction"
+        >> spaces_opt
+        >> newline
+        >> return @@ FuncDef (loc, ident, insts)))))
+
 let version = "0.0.2"
 
 let () =
