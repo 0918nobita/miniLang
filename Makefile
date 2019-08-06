@@ -1,6 +1,6 @@
 build:
 	make -C ./compiler
-	make -C ./swld
+	make -C ./swld MAKE_DEPS=false
 
 test:
 	make -C ./test-suite test

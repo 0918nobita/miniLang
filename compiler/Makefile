@@ -2,9 +2,15 @@ MLI_FILES := parser.mli wast.mli wasm.mli stack_func.mli ir.mli
 
 ML_FILES := parser.ml wast.ml wasm.ml malloc_func.ml stack_func.ml ir.ml compiler.ml
 
+ifndef MAKE_DEPS
+	MAKE_DEPS=true
+endif
+
 build:
+ifeq ($(MAKE_DEPS),true)
 	make -C ../binary-utils
 	make -C ../parser-combinator
+endif
 	mkdir -p _build
 	ocamlopt -I ../parser-combinator $(MLI_FILES)
 	ocamlfind ocamlopt \
