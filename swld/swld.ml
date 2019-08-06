@@ -100,6 +100,18 @@ let program src =
     (many empty_line >> many (global_def <|> func_def))
     (bof, src)
 
+let read filename =
+	let
+    f = open_in filename and
+    str = ref ""
+  in
+    (try
+      while true do str := !str ^ input_line f ^ "\n" done;
+    with
+      _ -> ());
+    close_in f;
+    !str
+
 let version = "0.0.2"
 
 let () =
