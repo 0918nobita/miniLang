@@ -42,7 +42,8 @@ type inst_ast =
   | I32_const of location * (location * int)
 
 type stmt_ast =
-  | FuncDef of location * ident * (inst_ast list)
+  | Global_def of location * ident * (inst_ast list)
+  | Func_def of location * ident * (inst_ast list)
 
 let instruction = Parser (function (loc, _) as input ->
   input
@@ -68,11 +69,29 @@ let func_def = Parser (function (loc, _) as input ->
       spaces_opt
       >> newline
       >> many instruction
-      >>= (fun insts -> spaces_opt
+      >>= (fun insts ->
+        spaces_opt
         >> token "endfunction"
         >> spaces_opt
         >> newline
-        >> return @@ FuncDef (loc, ident, insts)))))
+        >> return @@ Func_def (loc, ident, insts)))))
+
+let global_def = Parser (function (loc, _) as input ->
+  input
+  |> parse (
+    token "global"
+    >> spaces
+    >> identifier
+    >>= (fun ident ->
+      spaces_opt
+      >> newline
+      >> many instruction
+      >>= (fun insts ->
+        spaces_opt
+        >> token "endglobal"
+        >> spaces_opt
+        >> newline
+        >> return @@ Global_def (loc, ident, insts)))))
 
 let version = "0.0.2"
 
