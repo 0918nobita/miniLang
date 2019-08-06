@@ -13,6 +13,8 @@ let identifier =
 
 let spaces = some @@ char ' '
 
+let spaces_opt = many @@ char ' '
+
 let version = "0.0.2"
 
 let () =
