@@ -1,6 +1,6 @@
 opam-version: "2.0"
 name: "psyche"
-version: "0.0.1"
+version: "0.0.2"
 maintainer: "0918nobita <nobita.0918@gmail.com>"
 synopsis: "A WASM-friendly lightweight programming language implemented in OCaml"
 authors: [
