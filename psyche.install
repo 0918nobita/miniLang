@@ -1,5 +1,6 @@
 bin: [
   "compiler/_build/psyche" {"psyche"}
+  "swld/_build/swld" {"swld"}
 ]
 man: [
   "man/psyche.1" {"man1/psyche.1"}
