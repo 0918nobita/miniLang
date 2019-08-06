@@ -1,5 +1,7 @@
 type location = { line : int; chr : int }
 
+val bof : location
+
 val string_of_loc : location -> string
 
 val plus_loc : location -> location -> location
