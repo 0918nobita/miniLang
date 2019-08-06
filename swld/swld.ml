@@ -44,6 +44,18 @@ type inst_ast =
 type stmt_ast =
   | FuncDef of location * ident * (inst_ast list)
 
+let instruction = Parser (function (loc, _) as input ->
+  input
+  |> parse (
+    spaces_opt
+    >> token "i32.const"
+    >> spaces
+    >> integer
+    >>= (fun num ->
+      spaces_opt
+      >> newline
+      >> return @@ I32_const (loc, num))))
+
 let version = "0.0.2"
 
 let () =
