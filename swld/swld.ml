@@ -74,6 +74,7 @@ let func_def = Parser (function (loc, _) as input ->
         >> token "endfunction"
         >> spaces_opt
         >> newline
+        >> many empty_line
         >> return @@ Func_def (loc, ident, insts)))))
 
 let global_def = Parser (function (loc, _) as input ->
@@ -91,7 +92,13 @@ let global_def = Parser (function (loc, _) as input ->
         >> token "endglobal"
         >> spaces_opt
         >> newline
+        >> many empty_line
         >> return @@ Global_def (loc, ident, insts)))))
+
+let program src =
+  parse
+    (many empty_line >> many (global_def <|> func_def))
+    (bof, src)
 
 let version = "0.0.2"
 
