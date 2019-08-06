@@ -56,6 +56,8 @@ let instruction = Parser (function (loc, _) as input ->
       >> newline
       >> return @@ I32_const (loc, num))))
 
+let empty_line = drop (many (char ' ') >> newline)
+
 let func_def = Parser (function (loc, _) as input ->
   input
   |> parse (
