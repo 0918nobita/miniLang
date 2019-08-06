@@ -15,6 +15,8 @@ let spaces = some @@ char ' '
 
 let spaces_opt = many @@ char ' '
 
+let newline = char '\n'
+
 let version = "0.0.2"
 
 let () =
