@@ -36,6 +36,14 @@ let nat =
 
 let integer = unary <*> nat
 
+type ident = location * string
+
+type inst_ast =
+  | I32_const of location * (location * int)
+
+type stmt_ast =
+  | FuncDef of location * ident * (inst_ast list)
+
 let version = "0.0.2"
 
 let () =
