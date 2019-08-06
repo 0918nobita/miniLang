@@ -17,6 +17,25 @@ let spaces_opt = many @@ char ' '
 
 let newline = char '\n'
 
+let unary =
+  let
+    plus = char '+' >> return (fun x -> x) and
+    minus = char '-' >>= (fun (loc, _) -> return (fun (_, x) -> (loc, (-1) * x)))
+  in
+    plus <|> minus <|> return (fun x -> x)
+
+let nat =
+  let
+    digit = (fun (_, c) -> int_of_char c - 48) <$> digit_char and
+    toNum x acc = x * 10 + acc
+  in
+  Parser (function (loc, _) as input ->
+    parse (some digit) input
+    |> List.map (fun result ->
+      { result with ast = (loc, List.fold_left toNum 0 result.ast) }))
+
+let integer = unary <*> nat
+
 let version = "0.0.2"
 
 let () =
