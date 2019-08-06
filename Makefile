@@ -1,4 +1,6 @@
 build:
+	make -C ./binary-utils
+	make -C ./parser-combinator
 	make -C ./compiler
 	make -C ./swld
 
