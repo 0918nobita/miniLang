@@ -11,6 +11,8 @@ let identifier =
   <$> letter
   <*> (many (letter <|> digit_char))
 
+let spaces = some @@ char ' '
+
 let version = "0.0.2"
 
 let () =
