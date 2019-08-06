@@ -1,6 +1,6 @@
-MLI_FILES := binary.mli parser_combinator.mli parser.mli ir.mli wasm.mli
+MLI_FILES := binary.mli parser_combinator.mli parser.mli wast.mli wasm.mli stack_func.mli ir.mli
 
-ML_FILES := parser_combinator.ml parser.ml binary.ml ir.ml wasm.ml compiler.ml
+ML_FILES := parser_combinator.ml parser.ml binary.ml wast.ml wasm.ml malloc_func.ml stack_func.ml ir.ml compiler.ml
 
 build:
 	mkdir -p _build

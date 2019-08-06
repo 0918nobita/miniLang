@@ -18,13 +18,9 @@ type expr_ast =
   | GreaterE of location * expr_ast * expr_ast
   | And of location * expr_ast * expr_ast
   | Or of location * expr_ast * expr_ast
-  | If of location * expr_ast * expr_ast * expr_ast
+  | IfElse of location * expr_ast * expr_ast * expr_ast
   | Let of location * ident * expr_ast * expr_ast
   | Funcall of location * string * (expr_ast list)
-  | Nil of location
-  | Cons of location * expr_ast * expr_ast
-  | ListAccessor of location * expr_ast * expr_ast
-  | ListLiteral of location * (expr_ast list)
 
 type stmt_ast = FuncDef of location * bool * ident * (ident list) * expr_ast
 

@@ -18,13 +18,9 @@ type expr_ast =
   | GreaterE of location * expr_ast * expr_ast
   | And of location * expr_ast * expr_ast
   | Or of location * expr_ast * expr_ast
-  | If of location * expr_ast * expr_ast * expr_ast
+  | IfElse of location * expr_ast * expr_ast * expr_ast
   | Let of location * ident * expr_ast * expr_ast
   | Funcall of location * string * (expr_ast list)
-  | Nil of location
-  | Cons of location * expr_ast * expr_ast
-  | ListAccessor of location * expr_ast * expr_ast
-  | ListLiteral of location * (expr_ast list)
 
 type stmt_ast = FuncDef of location * bool * ident * (ident list) * expr_ast
 
@@ -123,13 +119,9 @@ let loc_of_expr_ast = function
   | GreaterE (loc, _, _) -> loc
   | And (loc, _, _) -> loc
   | Or (loc, _, _) -> loc
-  | If (loc, _, _, _) -> loc
+  | IfElse (loc, _, _, _) -> loc
   | Let (loc, _, _, _) -> loc
   | Funcall (loc, _, _) -> loc
-  | Nil loc -> loc
-  | Cons (loc, _, _) -> loc
-  | ListAccessor (loc, _, _) -> loc
-  | ListLiteral (loc, _) -> loc
 
 let addop =
   let
@@ -170,7 +162,7 @@ let chain p op =
   >>= rest
   >>= (fun ast -> spaces_opt >> return ast)
 
-let rec factor1 () =
+let rec factor () =
   let if_expr = Parser (function (loc, _) as result ->
     result
     |> parse (
@@ -186,7 +178,7 @@ let rec factor1 () =
           >> spaces
           >> logical_expr_or ()
           >>= (fun else_clause ->
-            return @@ If (loc, cond, then_clause, else_clause))))))
+            return @@ IfElse (loc, cond, then_clause, else_clause))))))
   in
   let let_expr = Parser (function (loc, _) as input ->
     input
@@ -222,60 +214,14 @@ let rec factor1 () =
             >> spaces_opt
             >> return @@ Funcall (loc, ident, asts)))))
   in
-  let list_literal = Parser (function (loc, _) as input ->
-    input
-    |> parse (
-      char '['
-      >> spaces_opt
-      >> option [] (List.cons <$> logical_expr_or () <*> many (char ';' >> spaces_opt >> logical_expr_or ()))
-      >>= (fun ast_list ->
-        char ']'
-        >> spaces_opt
-        >> return @@ ListLiteral (loc, ast_list))))
-  in
   nat
-  <|> Parser (function (loc, _) as input -> input |> parse (token "nil" >> spaces_opt >> return @@ Nil loc))
   <|> funcall
-  <|> list_literal
   <|> Parser (fun input -> input |> parse (char '(' >> logical_expr_or () >>= (fun c -> char ')' >> return c)))
   <|> if_expr
   <|> let_expr
   <|> (identifier >>= (fun (loc, name) -> spaces_opt >> return @@ Ident (loc, name)))
 
-and factor2 () =
-  Parser (function (_, _) as input ->
-    input
-    |> parse (
-      factor1 ()
-      >>= (fun head ->
-        option head
-          (some (spaces_opt >> token "::" >> spaces_opt >> factor1 ())
-          >>= (fun tail ->
-            let list = head :: tail in
-            let forward = List.rev @@ List.tl @@ List.rev list in
-            return @@ List.fold_right
-              (fun car cdr -> Cons (loc_of_expr_ast car, car, cdr))
-              forward
-              @@ Base.List.last_exn list)))))
-
-and factor3 () = Parser (function (loc, _) as input ->
-  input
-  |> parse (
-    factor2 ()
-    >>= (fun factor ->
-      option factor (
-        spaces_opt
-        >> char '.'
-        >> spaces_opt
-        >> char '('
-        >> spaces_opt
-        >> logical_expr_or ()
-        >>= (fun index_expr ->
-          char ')'
-          >> spaces_opt
-          >> return @@ ListAccessor (loc, factor, index_expr))))))
-
-and term () = chain (factor3 ()) mulop
+and term () = chain (factor ()) mulop
 
 and arithmetic_expr () =
   unary <*> chain (term ()) addop

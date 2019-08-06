@@ -1,5 +1,8 @@
 open Parser_combinator
 open Parser
+open Wasm
+open Malloc_func
+open Stack_func
 
 type instruction =
   | I32Const of int
@@ -20,11 +23,11 @@ type instruction =
   | GetLocalVar of int
   | I32Load
   | I32Store
-  | Call of int
+  | CallFunc of string
   | GetLocal of int
 
 type context =
-  { params : ident list
+  { ctx_params : ident list
   ; env : (string * int) list
   ; depth : int
   ; max_depth : int ref
@@ -32,7 +35,7 @@ type context =
 
 exception Unbound_value of location * string
 
-let insts_of_expr_ast ast names params =
+let insts_of_expr_ast ~expr_ast ~fn_names ~params =
   let rec inner (expr_ast, ctx) = match expr_ast with
     | IntLiteral (_, n) -> [I32Const n]
     | Minus (_, expr) ->
@@ -61,7 +64,7 @@ let insts_of_expr_ast ast names params =
         inner (lhs, ctx) @ [I32Eqz; I32If ([I32Const 0], inner (rhs, ctx))]
     | Or (_, lhs, rhs) ->
         inner (lhs, ctx) @ [I32Local [TeeLocal 0; I32Eqz; I32If (inner (rhs, ctx), [GetLocalVar 0])]]
-    | If (_, cond, t, e) ->
+    | IfElse (_, cond, t, e) ->
         inner (cond, ctx) @ [I32Eqz; I32If (inner (e, ctx), inner (t, ctx))]
     | Let (_, (_, ident), bound_expr, expr) ->
         let depth = ctx.depth + 1 in
@@ -70,12 +73,12 @@ let insts_of_expr_ast ast names params =
         let ctx_for_expr = { ctx with env = (ident, depth) :: ctx.env; depth } in
         if depth = 0
           then
-            Call 5
+            CallFunc "top"
             :: inner (bound_expr, ctx_for_bound_expr)
             @ I32Store
             :: inner (expr, ctx_for_expr)
           else
-            Call 5
+            CallFunc "top"
             :: I32Const (4 * depth)
             :: I32Add
             :: inner (bound_expr, ctx_for_bound_expr)
@@ -97,53 +100,30 @@ let insts_of_expr_ast ast names params =
             else
               if List.hd addrs = 0
                 then
-                  [Call 5; I32Load]
+                  [CallFunc "top"; I32Load]
                 else
-                  [Call 5; I32Const (List.hd addrs * 4);  I32Add; I32Load]
+                  [CallFunc "top"; I32Const (List.hd addrs * 4);  I32Add; I32Load]
     | Funcall (loc, ident, asts) ->
-        begin match Base.List.findi names ~f:(fun _ -> (=) ident) with
-          | Some (index, _) ->
-              Base.List.concat_map asts ~f:(fun ast -> inner (ast, ctx)) @ [Call (index + 7)]
-          | None ->
+        begin match Base.List.exists fn_names ~f:((=) ident) with
+          | true ->
+              Base.List.concat_map asts ~f:(fun ast -> inner (ast, ctx)) @ [CallFunc ident]
+          | false ->
               raise @@ Unbound_value (loc, ident)
         end
-    | Nil _ -> [I32Const 0]
-    | Cons (_, car, cdr) ->
-        inner (cdr, ctx) @     (* [i32 <- cdr に書き込むアドレス *)
-        [ Call 3 (* push *)    (* [ *)
-        ; I32Const 8           (* [i32 *)
-        ; Call 1 (* malloc *)  (* [i32 *)
-        ; Call 3 (* push *)    (* [ *)
-        ; Call 5 (* top *)     (* [i32 *)
-        ] @
-        inner (car, ctx) @     (* [i32 i32 *)
-        [ I32Store             (* [ *)
-        ; Call 5 (* top *)     (* [i32 <- 戻り値 *)
-        ; Call 4 (* pop *)     (* [i32 i32 *)
-        ; I32Const 4           (* [i32 i32 i32 *)
-        ; I32Add               (* [i32 i32 *)
-        ; Call 4 (* pop *)     (* [i32 i32 i32 *)
-        ; I32Store             (* [i32 *)
-        ]
-    | ListAccessor (_, list, index) ->
-        inner (list, ctx) @
-        inner (index, ctx) @
-        [ Call 6 (* nth *) ]
-    | ListLiteral (loc, list) ->
-        if List.length list = 0
-          then
-            inner (Nil loc, ctx)
-          else
-            inner (List.fold_right (fun car cdr ->
-              Cons (loc_of_expr_ast car, car, cdr)) list (Nil loc), ctx)
   in
   let max_depth = ref (-1) in
-  let body = inner (ast, { env = []; depth = -1; max_depth; params }) in
-  if !max_depth > (-1)
-    then [I32Const (4 * (!max_depth + 1)); Call 1; Call 3] @ body @ [Call 4; Call 2]
+  let body = inner (expr_ast, { env = []; depth = -1; max_depth; ctx_params = params }) in
+  let body = if !max_depth > (-1)
+    then [I32Const (4 * (!max_depth + 1)); CallFunc "malloc"; CallFunc "push"] @ body @ [CallFunc "pop"; CallFunc "free"]
     else body
+  in
+  body
 
-let bin_of_insts irs max num_params =
+let unwrap = function
+  | Some v -> v
+  | None -> raise @@ Invalid_argument "Unwrap failure"
+
+let bin_of_insts ~insts ~num_params ~fn_names =
   let rec inner (irs, current, max) = match irs with
     | [] -> []
     | I32Const n :: tail ->
@@ -204,12 +184,60 @@ let bin_of_insts irs max num_params =
         2 :: (* alignment *)
         0 :: (* store offset *)
         inner (tail, current, max)
-    | Call n :: tail ->
+    | CallFunc ident :: tail ->
         16 :: (* opcode *)
-        n :: (* function index *)
+        fst (unwrap (Base.List.findi fn_names ~f:(fun _ -> (=) ident))) ::
         inner (tail, current, max)
     | GetLocal n :: tail ->
         32 :: Binary.leb128_of_int n @
         inner (tail, current, max)
   in
-    inner (irs, (-1) + num_params, max)
+  let max = ref (-1) in
+  (!max, inner (insts, (-1) + num_params, max))
+
+let hidden_functions =
+  [ init
+  ; malloc
+  ; free
+  ; push
+  ; pop_func
+  ; top
+  ]
+
+let wasm_func_list_of_stmts ~stmts =
+  let fn_names =
+    ["init"; "malloc"; "free"; "push"; "pop"; "top"]
+    @ List.map (function FuncDef (_, _, (_, name), _, _) -> name) stmts
+  in
+  let insts_list =
+    stmts
+    |> List.map (
+      function FuncDef (_, pub, ident, params, expr_ast) ->
+        ( pub
+        , snd ident
+        , List.length params
+        , insts_of_expr_ast
+          ~expr_ast
+          ~fn_names
+          ~params
+        ))
+  in
+  hidden_functions
+  @
+  (insts_list
+  |> List.map (fun (pub, ident, num_params, insts) ->
+    let (max, code) = bin_of_insts ~insts ~num_params ~fn_names in
+    if pub
+      then
+        ExportedFunc
+          { export_name = ident
+          ; exp_signature = { params = num_params; results = 1 }
+          ; locals = max + 1 + num_params
+          ; code
+          }
+      else
+        Func
+          { signature = { params = num_params; results = 1 }
+          ; locals = max + 1 + num_params
+          ; code
+          }))

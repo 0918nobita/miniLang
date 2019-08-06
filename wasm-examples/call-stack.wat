@@ -15,7 +15,7 @@
         (get_global $sp)
         (i32.const 4)))
     (i32.load
-      (get_global 0)))
+      (get_global $sp)))
   (func $main (result i32)
     (call $push (i32.const 100))
     (call $push (i32.const 200))
