@@ -265,8 +265,6 @@ let func_def = Parser (function (loc, _) as input ->
             >> spaces_opt
             >> return @@ FuncDef (loc, pub, name, args, body)))))))
 
-let bof = { line = 0; chr = 0 }
-
 let program src =
   let parser =
     (spaces_opt

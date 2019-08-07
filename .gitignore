@@ -1,4 +1,6 @@
+_build
 *.o
 *.wasm
 *.cmi
 *.cmx
+*.cmo

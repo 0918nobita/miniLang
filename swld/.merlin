@@ -1,3 +1,2 @@
 PKG base
-B ../binary-utils
 B ../parser-combinator
