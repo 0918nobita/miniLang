@@ -44,6 +44,9 @@ type inst_ast =
   | I32_sub of location
   | I32_mul of location
   | I32_div_s of location
+  | Decl_local of location * ident
+  | Get_local of location * ident
+  | Set_local of location * ident
 
 type stmt_ast =
   | Global_def of location * ident * (inst_ast list)
@@ -116,7 +119,57 @@ let i32_div_s = Parser (fun input ->
       >> many empty_line
       >> return @@ I32_div_s loc)))
 
-let instruction = i32_const <|> i32_add <|> i32_sub <|> i32_mul <|> i32_div_s
+let decl_local = Parser (fun input ->
+  input
+  |> parse (
+    spaces_opt
+    >> token "decl_local"
+    >>= (fun (loc, _) ->
+      spaces
+      >> identifier
+      >>= (fun ident ->
+        spaces_opt
+        >> newline
+        >> many empty_line
+        >> return @@ Decl_local (loc, ident)))))
+
+let get_local = Parser (fun input ->
+  input
+  |> parse (
+    spaces_opt
+    >> token "get_local"
+    >>= (fun (loc, _) ->
+      spaces
+      >> identifier
+      >>= (fun ident ->
+        spaces_opt
+        >> newline
+        >> many empty_line
+        >> return @@ Get_local (loc, ident)))))
+
+let set_local = Parser (fun input ->
+  input
+  |> parse (
+    spaces_opt
+    >> token "set_local"
+    >>= (fun (loc, _) ->
+      spaces
+      >> identifier
+      >>= (fun ident ->
+        spaces_opt
+        >> newline
+        >> many empty_line
+        >> return @@ Set_local (loc, ident)))))
+
+let instruction =
+  i32_const
+  <|> i32_add
+  <|> i32_sub
+  <|> i32_mul
+  <|> i32_div_s
+  <|> decl_local
+  <|> get_local
+  <|> set_local
 
 let str_literal =
   Parser (function (loc, _) as input ->
