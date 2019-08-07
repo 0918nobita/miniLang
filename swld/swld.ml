@@ -40,6 +40,10 @@ type ident = location * string
 
 type inst_ast =
   | I32_const of location * (location * int)
+  | I32_add of location
+  | I32_sub of location
+  | I32_mul of location
+  | I32_div_s of location
 
 type stmt_ast =
   | Global_def of location * ident * (inst_ast list)
