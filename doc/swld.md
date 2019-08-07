@@ -21,15 +21,45 @@ endfunction
 
 ### Instructions
 
-#### i32.const
+#### Constant
 
-#### i32.add
+| Mnemonic | Immediates | Signature |
+| ---- | ---- | ---- |
+| `i32.const` | `$value`: varsint32 | `( -- i32)` |
 
-#### i32.sub
+The `i32.const` instruction returns the value of `$value`.
 
-#### i32.mul
+#### Integer Add
 
-#### i32.div_s
+| Mnemonic | Signature |
+| ---- | ---- |
+| `i32.add` | `(i32 i32 -- i32)` |
+
+The `i32.add` instruction returns the two's complement sum of its operands.
+
+#### Integer Subtract
+
+| Mnemonic | Signature |
+| ---- | ---- |
+| `i32.sub` | `(i32 i32 -- i32)` |
+
+The `i32.sub` instruction returns the two's complement difference of its operands.
+
+#### Integer Multiply
+
+| Mnemonic | Signature |
+| ---- | ---- |
+| `i32.mul` | `(i32 i32 -- i32)` |
+
+The `i32.mul` instruction returns the low half of the two's complement product of its operands.
+
+#### Integer Divide
+
+| Mnemonic | Signature |
+| ---- | ---- |
+| `i32.div_s` | `(i32 i32 -- i32)` |
+
+The `i32.div_s` instruction return the signed quotient of its operands, interpreted as signed.
 
 #### get_local
 
