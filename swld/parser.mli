@@ -8,6 +8,8 @@ type inst_ast =
   | I32_sub of location
   | I32_mul of location
   | I32_div_s of location
+  | Get_global of location * ident
+  | Set_global of location * ident
   | Decl_local of location * ident
   | Get_local of location * ident
   | Set_local of location * ident

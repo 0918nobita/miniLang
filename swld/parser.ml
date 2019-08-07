@@ -44,6 +44,8 @@ type inst_ast =
   | I32_sub of location
   | I32_mul of location
   | I32_div_s of location
+  | Get_global of location * ident
+  | Set_global of location * ident
   | Decl_local of location * ident
   | Get_local of location * ident
   | Set_local of location * ident
@@ -128,6 +130,10 @@ let ident_arg opcode generator =
           >> many empty_line
           >> return @@ generator loc ident))))
 
+let get_global = ident_arg "get_global" (fun loc ident -> Get_global (loc, ident))
+
+let set_global = ident_arg "set_global" (fun loc ident -> Set_global (loc, ident))
+
 let decl_local = ident_arg "decl_local" (fun loc ident -> Decl_local (loc, ident))
 
 let get_local = ident_arg "get_local" (fun loc ident -> Get_local (loc, ident))
@@ -140,6 +146,8 @@ let instruction =
   <|> i32_sub
   <|> i32_mul
   <|> i32_div_s
+  <|> get_global
+  <|> set_global
   <|> decl_local
   <|> get_local
   <|> set_local
