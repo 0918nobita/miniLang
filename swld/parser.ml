@@ -47,6 +47,12 @@ type inst_ast =
   | Decl_local of location * ident
   | Get_local of location * ident
   | Set_local of location * ident
+  | Block of location
+  | End of location
+  | Return of location
+  | Loop of location
+  | I32_load of location
+  | I32_store of location
 
 type stmt_ast =
   | Global_def of location * ident * (inst_ast list)
@@ -95,6 +101,18 @@ let i32_mul = no_args "i32.mul" (fun loc -> I32_mul loc)
 
 let i32_div_s = no_args "i32.div_s" (fun loc -> I32_div_s loc)
 
+let block = no_args "block" (fun loc -> Block loc)
+
+let end_ = no_args "end" (fun loc -> End loc)
+
+let return_ = no_args "return" (fun loc -> Return loc)
+
+let loop = no_args "loop" (fun loc -> Loop loc)
+
+let i32_load = no_args "i32.load" (fun loc -> I32_load loc)
+
+let i32_store = no_args "i32.store" (fun loc -> I32_store loc)
+
 let ident_arg opcode generator =
   Parser (fun input ->
     input
@@ -125,6 +143,12 @@ let instruction =
   <|> decl_local
   <|> get_local
   <|> set_local
+  <|> block
+  <|> end_
+  <|> return_
+  <|> loop
+  <|> i32_load
+  <|> i32_store
 
 let str_literal =
   Parser (function (loc, _) as input ->

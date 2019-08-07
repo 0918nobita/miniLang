@@ -11,6 +11,12 @@ type inst_ast =
   | Decl_local of location * ident
   | Get_local of location * ident
   | Set_local of location * ident
+  | Block of location
+  | End of location
+  | Return of location
+  | Loop of location
+  | I32_load of location
+  | I32_store of location
 
 type stmt_ast =
   | Global_def of location * ident * (inst_ast list)
