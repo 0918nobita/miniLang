@@ -75,49 +75,25 @@ let i32_const = Parser (fun input ->
         >> many empty_line
         >> return @@ I32_const (loc, num)))))
 
-let i32_add = Parser (fun input ->
-  input
-  |> parse (
-    spaces_opt
-    >> token "i32.add"
-    >>= (fun (loc, _) ->
+let no_args opcode generator =
+  Parser (fun input ->
+    input
+    |> parse (
       spaces_opt
-      >> newline
-      >> many empty_line
-      >> return @@ I32_add loc)))
+      >> token opcode
+      >>= (fun (loc, _) ->
+        spaces_opt
+        >> newline 
+        >> many empty_line
+        >> return @@ generator loc)))
 
-let i32_sub = Parser (fun input ->
-  input
-  |> parse (
-    spaces_opt
-    >> token "i32.sub"
-    >>= (fun (loc, _) ->
-      spaces_opt
-      >> newline
-      >> many empty_line
-      >> return @@ I32_sub loc)))
+let i32_add = no_args "i32.add" (fun loc -> I32_add loc)
 
-let i32_mul = Parser (fun input ->
-  input
-  |> parse (
-    spaces_opt
-    >> token "i32.mul"
-    >>= (fun (loc, _) ->
-      spaces_opt
-      >> newline
-      >> many empty_line
-      >> return @@ I32_mul loc)))
+let i32_sub = no_args "i32.sub" (fun loc -> I32_sub loc)
 
-let i32_div_s = Parser (fun input ->
-  input
-  |> parse (
-    spaces_opt
-    >> token "i32.div"
-    >>= (fun (loc, _) ->
-      spaces_opt
-      >> newline
-      >> many empty_line
-      >> return @@ I32_div_s loc)))
+let i32_mul = no_args "i32.mul" (fun loc -> I32_mul loc)
+
+let i32_div_s = no_args "i32.div_s" (fun loc -> I32_div_s loc)
 
 let decl_local = Parser (fun input ->
   input
