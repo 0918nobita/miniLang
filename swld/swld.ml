@@ -47,21 +47,79 @@ type inst_ast =
 
 type stmt_ast =
   | Global_def of location * ident * (inst_ast list)
-  | Func_def of location * ident * (inst_ast list)
+  | Func_def of { loc: location; ident: ident; export_name: string option; insts: (inst_ast list) }
 
-let instruction = Parser (function (loc, _) as input ->
+let empty_line = drop (many (char ' ') >> newline)
+
+let i32_const = Parser (fun input ->
   input
   |> parse (
     spaces_opt
     >> token "i32.const"
-    >> spaces
-    >> integer
-    >>= (fun num ->
+    >>= (fun (loc, _) ->
+      spaces
+      >> integer
+      >>= (fun num ->
+        spaces_opt
+        >> newline
+        >> many empty_line
+        >> return @@ I32_const (loc, num)))))
+
+let i32_add = Parser (fun input ->
+  input
+  |> parse (
+    spaces_opt
+    >> token "i32.add"
+    >>= (fun (loc, _) ->
       spaces_opt
       >> newline
-      >> return @@ I32_const (loc, num))))
+      >> many empty_line
+      >> return @@ I32_add loc)))
 
-let empty_line = drop (many (char ' ') >> newline)
+let i32_sub = Parser (fun input ->
+  input
+  |> parse (
+    spaces_opt
+    >> token "i32.sub"
+    >>= (fun (loc, _) ->
+      spaces_opt
+      >> newline
+      >> many empty_line
+      >> return @@ I32_sub loc)))
+
+let i32_mul = Parser (fun input ->
+  input
+  |> parse (
+    spaces_opt
+    >> token "i32.mul"
+    >>= (fun (loc, _) ->
+      spaces_opt
+      >> newline
+      >> many empty_line
+      >> return @@ I32_mul loc)))
+
+let i32_div_s = Parser (fun input ->
+  input
+  |> parse (
+    spaces_opt
+    >> token "i32.div"
+    >>= (fun (loc, _) ->
+      spaces_opt
+      >> newline
+      >> many empty_line
+      >> return @@ I32_div_s loc)))
+
+let str_literal =
+  Parser (function (loc, _) as input ->
+    input
+    |> parse (
+      char '"'
+      >> identifier
+      >>= (fun (_, content) ->
+        char '"'
+        >> return (loc, content))))
+
+let instruction = i32_const <|> i32_add <|> i32_sub <|> i32_mul <|> i32_div_s
 
 let func_def = Parser (function (loc, _) as input ->
   input
@@ -70,16 +128,24 @@ let func_def = Parser (function (loc, _) as input ->
     >> spaces
     >> identifier
     >>= (fun ident ->
-      spaces_opt
-      >> newline
-      >> many instruction
-      >>= (fun insts ->
+      option None (spaces >> (Base.Option.some <$> str_literal))
+      >>= (fun export_name ->
         spaces_opt
-        >> token "endfunction"
-        >> spaces_opt
         >> newline
         >> many empty_line
-        >> return @@ Func_def (loc, ident, insts)))))
+        >> many instruction
+        >>= (fun insts ->
+          spaces_opt
+          >> token "endfunction"
+          >> spaces_opt
+          >> newline
+          >> many empty_line
+          >> return @@ Func_def
+            { loc
+            ; ident
+            ; insts
+            ; export_name = Base.Option.map export_name ~f:snd
+            })))))
 
 let global_def = Parser (function (loc, _) as input ->
   input
