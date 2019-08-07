@@ -203,10 +203,15 @@ let global_def = Parser (function (loc, _) as input ->
         >> many empty_line
         >> return @@ Global_def (loc, ident, insts)))))
 
+exception Syntax_error of location
+
 let program src =
-  parse
-    (many empty_line >> many (global_def <|> func_def))
-    (bof, src)
+  let result = parse (many empty_line >> many (global_def <|> func_def)) (bof, src) in
+  result
+    |> List.iter (function
+      | { ast = _; loc; rest } when rest <> "" -> raise @@ Syntax_error loc
+      | _ -> ());
+    (List.hd result).ast
 
 let read filename =
 	let
@@ -230,4 +235,10 @@ let () =
         print_endline @@ "Version " ^ version
       end
     else
-      ()
+      let stmts = program @@ read Sys.argv.(1) in
+      stmts
+      |> List.iter (function
+        | Func_def { ident; _ } ->
+            print_endline @@ snd ident
+        | Global_def _ ->
+            ())
