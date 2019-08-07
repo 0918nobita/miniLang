@@ -47,7 +47,14 @@ type inst_ast =
 
 type stmt_ast =
   | Global_def of location * ident * (inst_ast list)
-  | Func_def of { loc: location; ident: ident; export_name: string option; insts: (inst_ast list) }
+  | Func_def of
+    { loc: location
+    ; ident: ident
+    ; export_name: string option
+    ; args: (ident list)
+    ; has_ret_val: bool
+    ; insts: (inst_ast list)
+    }
 
 let empty_line = drop (many (char ' ') >> newline)
 
@@ -109,6 +116,8 @@ let i32_div_s = Parser (fun input ->
       >> many empty_line
       >> return @@ I32_div_s loc)))
 
+let instruction = i32_const <|> i32_add <|> i32_sub <|> i32_mul <|> i32_div_s
+
 let str_literal =
   Parser (function (loc, _) as input ->
     input
@@ -119,33 +128,62 @@ let str_literal =
         char '"'
         >> return (loc, content))))
 
-let instruction = i32_const <|> i32_add <|> i32_sub <|> i32_mul <|> i32_div_s
+let arg =
+  identifier
+  >>= (fun ident ->
+    spaces
+    >> token "i32"
+    >> spaces_opt
+    >> return ident)
+
+let arguments =
+  Parser (fun input ->
+    input
+    |> parse (
+      char '('
+      >> spaces_opt
+      >> option [] (List.cons
+        <$> arg
+        <*> many (
+          char ','
+          >> spaces_opt
+          >> arg))
+      >>= (fun args ->
+        char ')'
+        >> spaces_opt
+        >> return args)))
 
 let func_def = Parser (function (loc, _) as input ->
   input
   |> parse (
     token "function"
-    >> spaces
-    >> identifier
-    >>= (fun ident ->
-      option None (spaces >> (Base.Option.some <$> str_literal))
-      >>= (fun export_name ->
-        spaces_opt
-        >> newline
-        >> many empty_line
-        >> many instruction
-        >>= (fun insts ->
-          spaces_opt
-          >> token "endfunction"
-          >> spaces_opt
-          >> newline
-          >> many empty_line
-          >> return @@ Func_def
-            { loc
-            ; ident
-            ; insts
-            ; export_name = Base.Option.map export_name ~f:snd
-            })))))
+    >> option None (spaces >> (Base.Option.some <$> str_literal))
+    >>= (fun export_name ->
+      spaces
+      >> identifier
+      >>= (fun ident ->
+        arguments
+        >>= (fun args ->
+          ((token "i32" >> return true) <|> (token "void" >> return false))
+          >>= (fun has_ret_val ->
+            spaces_opt
+            >> newline
+            >> many empty_line
+            >> many instruction
+            >>= (fun insts ->
+              spaces_opt
+              >> token "endfunction"
+              >> spaces_opt
+              >> newline
+              >> many empty_line
+              >> return @@ Func_def
+                { loc
+                ; ident
+                ; args
+                ; has_ret_val
+                ; insts
+                ; export_name = Base.Option.map export_name ~f:snd
+                })))))))
 
 let global_def = Parser (function (loc, _) as input ->
   input
