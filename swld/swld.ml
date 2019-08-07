@@ -95,47 +95,26 @@ let i32_mul = no_args "i32.mul" (fun loc -> I32_mul loc)
 
 let i32_div_s = no_args "i32.div_s" (fun loc -> I32_div_s loc)
 
-let decl_local = Parser (fun input ->
-  input
-  |> parse (
-    spaces_opt
-    >> token "decl_local"
-    >>= (fun (loc, _) ->
-      spaces
-      >> identifier
-      >>= (fun ident ->
-        spaces_opt
-        >> newline
-        >> many empty_line
-        >> return @@ Decl_local (loc, ident)))))
+let ident_arg opcode generator =
+  Parser (fun input ->
+    input
+    |> parse (
+      spaces_opt
+      >> token opcode
+      >>= (fun (loc, _) ->
+        spaces
+        >> identifier
+        >>= (fun ident ->
+          spaces_opt
+          >> newline
+          >> many empty_line
+          >> return @@ generator loc ident))))
 
-let get_local = Parser (fun input ->
-  input
-  |> parse (
-    spaces_opt
-    >> token "get_local"
-    >>= (fun (loc, _) ->
-      spaces
-      >> identifier
-      >>= (fun ident ->
-        spaces_opt
-        >> newline
-        >> many empty_line
-        >> return @@ Get_local (loc, ident)))))
+let decl_local = ident_arg "decl_local" (fun loc ident -> Decl_local (loc, ident))
 
-let set_local = Parser (fun input ->
-  input
-  |> parse (
-    spaces_opt
-    >> token "set_local"
-    >>= (fun (loc, _) ->
-      spaces
-      >> identifier
-      >>= (fun ident ->
-        spaces_opt
-        >> newline
-        >> many empty_line
-        >> return @@ Set_local (loc, ident)))))
+let get_local = ident_arg "get_local" (fun loc ident -> Get_local (loc, ident))
+
+let set_local = ident_arg "set_local" (fun loc ident -> Set_local (loc, ident))
 
 let instruction =
   i32_const
