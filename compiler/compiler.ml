@@ -88,30 +88,22 @@ let () =
         "A WASM friendly lightweight programming language\n" ^
         "Version " ^ version
     else
-      match Sys.argv.(1) with
-        | "make" ->
-            if Array.length Sys.argv >= 3
-              then
-                let input = read @@ Sys.argv.(2) in
-                try
-                  compile input
-                with
-                  | Syntax_error loc ->
-                      begin
-                        syntax_error false input loc;
-                        exit (-1)
-                      end
-                  | Duplicate_func loc ->
-                      begin
-                        duplicate_func false input loc;
-                        exit (-1)
-                      end
-                  | Unbound_value (loc, ident) ->
-                      begin
-                        unbound_value false input loc ident;
-                        exit (-1)
-                      end
-              else
-                (print_endline "Source files were not provided"; exit (-1))
-        | str ->
-            (print_endline @@ "Invalid subcommand: " ^ str; exit (-1))
+      let input = read @@ Sys.argv.(1) in
+      try
+        compile input
+      with
+        | Syntax_error loc ->
+            begin
+              syntax_error false input loc;
+              exit (-1)
+            end
+        | Duplicate_func loc ->
+            begin
+              duplicate_func false input loc;
+              exit (-1)
+            end
+        | Unbound_value (loc, ident) ->
+            begin
+              unbound_value false input loc ident;
+              exit (-1)
+            end

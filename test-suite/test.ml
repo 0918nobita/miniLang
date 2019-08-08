@@ -69,7 +69,7 @@ let () =
   |> List.iter (fun file ->
     let name = String.sub file 0 (String.length file - 4) in
     let out = open_out "result" in
-    match Sys.command @@ "psyche make " ^ file ^ " > tmp" with
+    match Sys.command @@ "psyche " ^ file ^ " > tmp" with
       | 0 ->
           begin match Sys.command "wasm-interp --run-all-exports out.wasm > tmp" with
             | 0 ->
