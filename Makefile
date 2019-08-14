@@ -3,7 +3,7 @@ build:
 	make -C ./swld MAKE_DEPS=false
 
 test:
-	make -C ./test-suite test
+	make -C ./test test
 
 clean:
 	make -C ./binary-utils clean
