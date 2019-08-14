@@ -4,7 +4,7 @@ let digit_char = oneOf "0123456789"
 
 let letter = satisfy (fun (_, c) ->
   let code = Char.code c in
-    (65 <= code && code <= 90) || (97 <= code && code <= 122))
+  (65 <= code && code <= 90) || (97 <= code && code <= 122))
 
 let identifier =
   (fun (loc, c) results -> (loc, Base.String.of_char_list (c :: List.map snd results)))
@@ -20,14 +20,14 @@ let newline = char '\n'
 let unary =
   let
     plus = char '+' >> return (fun x -> x) and
-    minus = char '-' >>= (fun (loc, _) -> return (fun (_, x) -> (loc, (-1) * x)))
+  minus = char '-' >>= (fun (loc, _) -> return (fun (_, x) -> (loc, (-1) * x)))
   in
-    plus <|> minus <|> return (fun x -> x)
+  plus <|> minus <|> return (fun x -> x)
 
 let nat =
   let
     digit = (fun (_, c) -> int_of_char c - 48) <$> digit_char and
-    toNum x acc = x * 10 + acc
+  toNum x acc = x * 10 + acc
   in
   Parser (function (loc, _) as input ->
     parse (some digit) input
@@ -59,13 +59,13 @@ type inst_ast =
 type stmt_ast =
   | Global_def of location * ident * (inst_ast list)
   | Func_def of
-    { loc: location
-    ; ident: ident
-    ; export_name: string option
-    ; args: (ident list)
-    ; has_ret_val: bool
-    ; insts: (inst_ast list)
-    }
+      { loc: location
+      ; ident: ident
+      ; export_name: string option
+      ; args: (ident list)
+      ; has_ret_val: bool
+      ; insts: (inst_ast list)
+      }
 
 let empty_line = drop (many (char ' ') >> newline)
 
@@ -183,11 +183,11 @@ let arguments =
       char '('
       >> spaces_opt
       >> option [] (List.cons
-        <$> arg
-        <*> many (
-          char ','
-          >> spaces_opt
-          >> arg))
+                    <$> arg
+                    <*> many (
+                      char ','
+                      >> spaces_opt
+                      >> arg))
       >>= (fun args ->
         char ')'
         >> spaces_opt
@@ -217,13 +217,13 @@ let func_def = Parser (function (loc, _) as input ->
               >> newline
               >> many empty_line
               >> return @@ Func_def
-                { loc
-                ; ident
-                ; args
-                ; has_ret_val
-                ; insts
-                ; export_name = Base.Option.map export_name ~f:snd
-                })))))))
+                             { loc
+                             ; ident
+                             ; args
+                             ; has_ret_val
+                             ; insts
+                             ; export_name = Base.Option.map export_name ~f:snd
+                             })))))))
 
 let global_def = Parser (function (loc, _) as input ->
   input
@@ -248,7 +248,8 @@ exception Syntax_error of location
 let program src =
   let result = parse (many empty_line >> many (global_def <|> func_def)) (bof, src) in
   result
-    |> List.iter (function
-      | { ast = _; loc; rest } when rest <> "" -> raise @@ Syntax_error loc
-      | _ -> ());
-    (List.hd result).ast
+  |> Base.List.iter ~f:(function
+    | { ast = _; loc; rest } when rest <> "" ->
+      raise @@ Syntax_error loc
+    | _ -> ());
+  (List.hd result).ast
