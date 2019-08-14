@@ -1,0 +1,24 @@
+{
+  "folders": [
+    {
+      "path": "./"
+    }
+  ],
+  "settings": {
+    "files.exclude": {
+      "**/.git": true,
+      "**/_build": true,
+      "**/*.wasm": true,
+      "**/*.cmi": true,
+      "**/*.cmx": true,
+      "**/*.o": true
+    }
+  },
+  "extensions": {
+    "recommendations": [
+      "eamodio.gitlens",
+      "github.vscode-pull-request-github",
+      "freebroccolo.reasonml"
+    ]
+  }
+}
