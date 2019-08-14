@@ -11,8 +11,10 @@ type 'a result = { ast : 'a; loc : location; rest : string }
 type 'a parser = Parser of (location * string -> 'a result list)
 
 val parse : 'a parser -> location * string -> 'a result list
+(** 渡した文字列を指定位置からパースする *)
 
 val token : string -> (location * string) parser
+(** 渡した文字列のパーサを生成する *)
 
 val ( <$> ) : ('a -> 'b) -> 'a parser -> 'b parser
 

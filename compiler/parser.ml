@@ -27,16 +27,16 @@ type stmt_ast = FuncDef of location * bool * ident * (ident list) * expr_ast
 let unary =
   let
     plus = char '+' >> return (fun x -> x) and
-    minus = char '-' >>= (fun (loc, _) -> return (fun ast -> Minus (loc, ast)))
+  minus = char '-' >>= (fun (loc, _) -> return (fun ast -> Minus (loc, ast)))
   in
-    plus <|> minus <|> return (fun x -> x)
+  plus <|> minus <|> return (fun x -> x)
 
 let digit_char = oneOf "0123456789"
 
 let nat =
   let
     digit = (fun (_, c) -> int_of_char c - 48) <$> digit_char and
-    toNum x acc = x * 10 + acc
+  toNum x acc = x * 10 + acc
   in
   Parser (function (loc, _) as input ->
     parse (some digit) input
@@ -59,36 +59,36 @@ let comment =
       try
         for index = 0 to (String.length src - 1) do
           let c = String.get src index in
-            begin match c with
-              | '(' ->
-                  begin
-                    if !asterisk then asterisk := false;
-                    if !left_parenthesis = false then left_parenthesis := true;
-                  end
-              | '*' ->
-                  begin
-                    if !asterisk = false then asterisk := true;
-                    if !left_parenthesis then (nests := !nests + 1; left_parenthesis := false)
-                  end
-              | ')' ->
-                  begin
-                    if !asterisk then (nests := !nests - 1; asterisk := false);
-                    if !left_parenthesis then left_parenthesis := false
-                  end
-              | _ ->
-                begin
-                  if c = '\n' then (line := !line + 1; chr := 0) else chr := !chr + 1;
-                  if !asterisk then asterisk := false;
-                  if !left_parenthesis then left_parenthesis := false
-                end
-            end;
-            if !nests = 0 then raise @@ Out_of_loop (index, { line = !line; chr = !chr });
+          begin match c with
+          | '(' ->
+            begin
+              if !asterisk then asterisk := false;
+              if !left_parenthesis = false then left_parenthesis := true;
+            end
+          | '*' ->
+            begin
+              if !asterisk = false then asterisk := true;
+              if !left_parenthesis then (nests := !nests + 1; left_parenthesis := false)
+            end
+          | ')' ->
+            begin
+              if !asterisk then (nests := !nests - 1; asterisk := false);
+              if !left_parenthesis then left_parenthesis := false
+            end
+          | _ ->
+            begin
+              if c = '\n' then (line := !line + 1; chr := 0) else chr := !chr + 1;
+              if !asterisk then asterisk := false;
+              if !left_parenthesis then left_parenthesis := false
+            end
+          end;
+          if !nests = 0 then raise @@ Out_of_loop (index, { line = !line; chr = !chr });
         done;
         raise @@ Syntax_error { line = !line; chr = !chr }
       with
         Out_of_loop (i, location) -> (i, location)
-      in
-      [{ ast = (); loc; rest = String.sub src (idx + 1) (String.length src - idx - 1) }])
+    in
+    [{ ast = (); loc; rest = String.sub src (idx + 1) (String.length src - idx - 1) }])
 
 let spaces = drop (some @@ ((drop @@ oneOf " \t\n") <|> comment))
 
@@ -96,7 +96,7 @@ let spaces_opt = drop (many @@ ((drop @@ oneOf " \t\n") <|> comment))
 
 let letter = satisfy (fun (_, c) ->
   let code = Char.code c in
-    (65 <= code && code <= 90) || (97 <= code && code <= 122))
+  (65 <= code && code <= 90) || (97 <= code && code <= 122))
 
 let identifier =
   (fun (loc, c) results -> (loc, Base.String.of_char_list (c :: List.map snd results)))
@@ -126,16 +126,16 @@ let loc_of_expr_ast = function
 let addop =
   let
     add = char '+' >> return (fun lhs rhs -> Add (loc_of_expr_ast lhs, lhs, rhs)) and
-    sub = char '-' >> return (fun lhs rhs -> Sub (loc_of_expr_ast lhs, lhs, rhs))
+  sub = char '-' >> return (fun lhs rhs -> Sub (loc_of_expr_ast lhs, lhs, rhs))
   in
-    add <|> sub
+  add <|> sub
 
 let mulop =
   let
     mul = char '*' >> return (fun lhs rhs -> Mul (loc_of_expr_ast lhs, lhs, rhs)) and
-    div = char '/' >> return (fun lhs rhs -> Div (loc_of_expr_ast lhs, lhs, rhs))
+  div = char '/' >> return (fun lhs rhs -> Div (loc_of_expr_ast lhs, lhs, rhs))
   in
-    mul <|> div
+  mul <|> div
 
 let cmpop =
   (token "==" >> return (fun lhs rhs -> Eq (loc_of_expr_ast lhs, lhs, rhs)))
@@ -207,8 +207,8 @@ let rec factor () =
           char '('
           >> spaces_opt
           >> option [] (List.cons
-            <$> logical_expr_or ()
-            <*> many (char ',' >> spaces_opt >> logical_expr_or ()))
+                        <$> logical_expr_or ()
+                        <*> many (char ',' >> spaces_opt >> logical_expr_or ()))
           >>= (fun asts ->
             char ')'
             >> spaces_opt
@@ -248,12 +248,12 @@ let func_def = Parser (function (loc, _) as input ->
         >> char '('
         >> spaces_opt
         >> option [] (List.cons
-          <$> identifier
-          <*> many (
-            char ','
-            >> spaces_opt
-            >> identifier
-            >>= (fun ident ->  spaces_opt >> return ident)))
+                      <$> identifier
+                      <*> many (
+                        char ','
+                        >> spaces_opt
+                        >> identifier
+                        >>= (fun ident ->  spaces_opt >> return ident)))
         >>= (fun args ->
           char ')'
           >> spaces_opt
@@ -268,11 +268,11 @@ let func_def = Parser (function (loc, _) as input ->
 let program src =
   let parser =
     (spaces_opt
-    >> func_def
-    >>= (fun head ->
-      many func_def
-        >>= (fun tail ->
-          return @@ head :: tail)))
+     >> func_def
+     >>= (fun head ->
+       many func_def
+       >>= (fun tail ->
+         return @@ head :: tail)))
     <|> (spaces_opt >> return [])
   in
   begin

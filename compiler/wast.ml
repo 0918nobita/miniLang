@@ -44,38 +44,38 @@ let rec bin_of_wasm_insts insts =
     ~f:(function
       | I32_const n -> 65 :: leb128_of_int n
       | I32_add (lhs, rhs) ->
-          bin_of_wasm_insts lhs @
-          bin_of_wasm_insts rhs @
-          [106]
+        bin_of_wasm_insts lhs @
+        bin_of_wasm_insts rhs @
+        [106]
       | I32_sub (lhs, rhs) ->
-          bin_of_wasm_insts lhs @
-          bin_of_wasm_insts rhs @
-          [107]
+        bin_of_wasm_insts lhs @
+        bin_of_wasm_insts rhs @
+        [107]
       | I32_mul -> [108]
       | I32_div_s -> [109]
       | I32_eq (lhs, rhs) ->
-          bin_of_wasm_insts lhs @
-          bin_of_wasm_insts rhs @
-          [70]
+        bin_of_wasm_insts lhs @
+        bin_of_wasm_insts rhs @
+        [70]
       | I32_ne (lhs, rhs) ->
-          bin_of_wasm_insts lhs @
-          bin_of_wasm_insts rhs @
-          [71]
+        bin_of_wasm_insts lhs @
+        bin_of_wasm_insts rhs @
+        [71]
       | I32_gt (lhs, rhs) ->
-          bin_of_wasm_insts lhs @ bin_of_wasm_insts rhs @ [74]
+        bin_of_wasm_insts lhs @ bin_of_wasm_insts rhs @ [74]
       | I32_ge -> [78]
       | I32_lt -> [72]
       | I32_le -> [76]
       | I32_eqz -> [69]
       | If { ret_type; cond; then_ } ->
-          bin_of_wasm_insts cond @
-          [4; bin_of_return_type ret_type] @
-          bin_of_wasm_insts (then_ @ [End])
+        bin_of_wasm_insts cond @
+        [4; bin_of_return_type ret_type] @
+        bin_of_wasm_insts (then_ @ [End])
       | If_else { ret_type; cond; then_; else_ } ->
-          bin_of_wasm_insts cond @
-          [4; bin_of_return_type ret_type] @
-          bin_of_wasm_insts then_ @
-          bin_of_wasm_insts (Else :: else_ @ [End])
+        bin_of_wasm_insts cond @
+        [4; bin_of_return_type ret_type] @
+        bin_of_wasm_insts then_ @
+        bin_of_wasm_insts (Else :: else_ @ [End])
       | Else -> [5]
       | Block ret_type -> [2; bin_of_return_type ret_type]
       | Loop ret_type -> [3; bin_of_return_type ret_type]
@@ -88,8 +88,8 @@ let rec bin_of_wasm_insts insts =
       | Get_local index -> 32 :: leb128_of_int index
       | Set_local (index, value) -> bin_of_wasm_insts value @ 33 :: leb128_of_int index
       | I32_store (addr, value) ->
-          bin_of_wasm_insts addr @
-          bin_of_wasm_insts value @
-          [54; 2 (* alignment *); 0 (* store offset *)]
+        bin_of_wasm_insts addr @
+        bin_of_wasm_insts value @
+        [54; 2 (* alignment *); 0 (* store offset *)]
       | I32_load addr -> bin_of_wasm_insts addr @ [40; 2 (* alignment *); 0 (* load offset *)]
       | Return -> [15])
