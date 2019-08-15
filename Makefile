@@ -2,8 +2,8 @@ build:
 	make -C ./compiler
 	make -C ./swld MAKE_DEPS=false
 
-test:
-	make -C ./test test
+test: ./compiler/_build/psyche
+	make -C ./test
 
 clean:
 	make -C ./binary-utils clean

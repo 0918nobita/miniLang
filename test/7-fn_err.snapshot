@@ -1,5 +1,3 @@
-Compilation: Failed
-Output:
 fn foo() { 42 }
    ^
 3:4: Duplicate function

@@ -1,10 +1,5 @@
-build:
-	mkdir -p _build
-	ocamlopt -o _build/test test.ml
-	rm test.cmi test.cmx test.o
-
-test: build
-	./_build/test
+run-test:
+	sh ./test-suite.sh
 
 clean:
-	rm -f test tmp result out.wasm
+	rm -f out.wasm
