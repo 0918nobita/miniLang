@@ -1,4 +1,4 @@
-#!/bin/bash -u
+#!/bin/sh
 
 success=0
 failed=0

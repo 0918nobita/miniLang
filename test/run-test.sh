@@ -1,4 +1,4 @@
-#!/bin/bash -u
+#!/bin/sh
 
 if [ ! -p /dev/stdin ]; then
   echo 'Nothing was piped.'
