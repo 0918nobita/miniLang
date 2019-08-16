@@ -14,9 +14,9 @@ for src in `ls -1 *.psy`; do
   expected=`cat "$snapshot"`
   cat "$src" | sh run-test.sh "$expected"
   if [ $? -gt 0 ]; then
-    (( failed++ ))
+    failed=$(( $failed + 1 ))
   else
-    (( success++ ))
+    success=$(( $success + 1 ))
   fi
 done
 
