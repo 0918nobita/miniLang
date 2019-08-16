@@ -11,6 +11,7 @@
       "**/*.wasm": true,
       "**/*.cmi": true,
       "**/*.cmx": true,
+      "**/*.cmo": true,
       "**/*.o": true
     }
   },
