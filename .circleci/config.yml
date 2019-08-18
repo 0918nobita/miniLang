@@ -8,8 +8,8 @@ cmd_attach_workspace: &cmd_attach_workspace
     at: *workspace_root
 
 jobs:
-  for_4_04_0:
-    executor: for_4_04_0
+  for_4_04_1:
+    executor: for_4_04_1
     steps:
       - test
   for_4_05_0:
@@ -42,9 +42,9 @@ commands:
           command: eval $(opam config env) && make test
 
 executors:
-  for_4_04_0:
+  for_4_04_1:
     docker:
-      - image: 0918nobita/psyche-docker:for-ocaml-4.04.0
+      - image: 0918nobita/psyche-docker:for-ocaml-4.04.1
     working_directory: *workspace_root
   for_4_05_0:
     docker:
@@ -58,6 +58,6 @@ executors:
 workflows:
   main:
     jobs:
-      - for_4_04_0
+      - for_4_04_1
       - for_4_05_0
       - for_4_06_0
