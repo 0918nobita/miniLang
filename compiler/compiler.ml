@@ -3,18 +3,6 @@ open Parser
 open Ir
 open Wasm
 
-let read filename =
-  let
-    f = open_in filename and
-  str = ref ""
-  in
-  (try
-     while true do str := !str ^ input_line f ^ "\n" done;
-   with
-     _ -> ());
-  close_in f;
-  !str
-
 let write f bytes = List.iter (output_byte f) bytes
 
 let adjust_size size bytes =
@@ -88,7 +76,7 @@ let () =
     "A WASM friendly lightweight programming language\n" ^
     "Version " ^ version
   else
-    let input = read @@ Sys.argv.(1) in
+    let input = Stdio.In_channel.read_all @@ Sys.argv.(1) in
     try
       compile input
     with
