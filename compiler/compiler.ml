@@ -5,15 +5,6 @@ open Wasm
 
 let write f bytes = List.iter (output_byte f) bytes
 
-let adjust_size size bytes =
-  let lack = size - List.length bytes in
-  if lack = 0
-  then bytes
-  else
-  if lack > 0
-  then bytes @ Base.List.init lack ~f:(fun _ -> 0)
-  else failwith "(adjust_arr_length) Invalid format"
-
 exception Duplicate_func of location
 
 let check_duplication =
