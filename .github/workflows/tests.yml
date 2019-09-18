@@ -8,7 +8,4 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - run: pwd && ls -la
-    - name: Run a multi-line script
-      run: |
-        echo Add other actions to build,
-        echo test, and deploy your project.
+    - run: dotnet run --project compiler/src/App.Tests
