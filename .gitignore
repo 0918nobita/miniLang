@@ -1,7 +1,10 @@
+obj/
+bin/
+.ionide/
+
 _build
 *.o
 *.wasm
 *.cmi
 *.cmx
 *.cmo
-.ionide
