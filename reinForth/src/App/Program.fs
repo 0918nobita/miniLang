@@ -3,5 +3,5 @@ open Library
 
 [<EntryPoint>]
 let main argv =
-    hello "F#" |> printf "%s"
+    printfn "%s" argv.[0]
     0
