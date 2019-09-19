@@ -28,6 +28,26 @@ let parse (p : Parser<'a>) (loc : Location) (src : string) =
     | (None, None) -> None
     | (None, Some f) -> f (loc); failwith "SyntaxError"
 
+let token (tok : string) =
+    {
+        parse = fun (loc, src) ->
+            if src.StartsWith tok
+                then
+                    let lines = tok.Split [|'\n'|]
+                    let length = String.length tok
+                    Some {
+                        ast = (loc, tok)
+                        currentLoc =
+                            loc + {
+                                line = Array.length lines - 1
+                                chr = String.length <| Array.last lines
+                            }
+                        rest = src.Substring (length, (String.length src - length))
+                    }
+                else None
+        error = None
+    }
+
 let succeed ast =
     {
         parse = fun (loc, rest) -> Some { ast = ast; currentLoc = loc; rest = rest }
