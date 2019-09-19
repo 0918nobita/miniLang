@@ -20,3 +20,9 @@ type Parser<'a> =
         parse : Location * string -> 'a Result List
         error : (Location -> unit) option
     }
+
+let pureParser ast =
+    {
+        parse = fun (loc, rest) -> [{ ast = ast; currentLoc = loc; rest = rest }]
+        error = None
+    }
