@@ -12,17 +12,24 @@ type Location =
 
 let bof = { line = 0; chr = 0 }
 
-type Result<'a> =
+type Success<'a> =
     { ast : 'a; currentLoc : Location; rest : string }
 
 type Parser<'a> =
     {
-        parse : Location * string -> 'a Result List
+        parse : Location * string -> 'a Success option
         error : (Location -> unit) option
     }
 
+let parse (p : Parser<'a>) (loc : Location) (src : string) =
+    let result = p.parse (loc, src)
+    match (result, p.error) with
+    | (Some _, _) -> result
+    | (None, None) -> None
+    | (None, Some f) -> f (loc); failwith "SyntaxError"
+
 let succeed ast =
     {
-        parse = fun (loc, rest) -> [{ ast = ast; currentLoc = loc; rest = rest }]
+        parse = fun (loc, rest) -> Some { ast = ast; currentLoc = loc; rest = rest }
         error = None
     }
