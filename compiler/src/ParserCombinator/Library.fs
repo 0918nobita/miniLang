@@ -11,3 +11,12 @@ type Location =
         }
 
 let bof = { line = 0; chr = 0 }
+
+type Result<'a> =
+    { ast : 'a; currentLoc : Location; rest : string }
+
+type Parser<'a> =
+    {
+        parse : Location * string -> 'a Result List
+        error : (Location -> unit) option
+    }
