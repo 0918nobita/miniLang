@@ -52,6 +52,15 @@ let (<*>) precede succeed =
         error = None
     }
 
+let (<|>) p q =
+    {
+        parse = fun input ->
+            match parse p input with
+            | Some _ as result -> result
+            | None -> parse q input
+        error = None
+    }
+
 let token (tok : string) =
     {
         parse = fun (loc, src) ->
