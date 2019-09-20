@@ -39,7 +39,17 @@ let fmap (f : 'a -> 'b) (p : Parser<'a>) =
                     currentLoc = result.currentLoc
                     rest = result.rest
                 })
-        error = p.error
+        error = None
+    }
+
+let (<*>) precede succeed =
+    {
+        parse = fun input ->
+            match parse precede input with
+            | Some { ast = f ; currentLoc = precedeLoc; rest = rest } ->
+                parse (fmap f succeed) (precedeLoc, rest)
+            | None -> None
+        error = None
     }
 
 let token (tok : string) =
