@@ -100,3 +100,11 @@ let succeed ast =
     }
 
 let option defaultAst p = p <|> succeed defaultAst
+
+let (<~>) p q =
+    p |= fun r -> q |= fun rs -> succeed (r :: rs)
+
+let rec many p =
+    option [] (p |= fun r -> many p |= fun rs -> succeed (r :: rs))
+
+let some p = p <~> many p
