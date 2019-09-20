@@ -61,6 +61,18 @@ let (<|>) p q =
         error = None
     }
 
+let (|=) p f =
+    {
+        parse = fun input ->
+            match parse p input with
+            | Some { ast = ast; currentLoc = loc; rest = rest } ->
+                parse (f ast) (loc, rest)
+            | None -> None
+        error = None
+    }
+
+let (|.) m f = m |= fun _ -> f
+
 let token (tok : string) =
     {
         parse = fun (loc, src) ->
