@@ -13,9 +13,12 @@ let rec showExpr =
 
 [<EntryPoint>]
 let main argv =
-    match parse (token "ab") (bof, argv.[0]) with
-    | Some { ast = _; currentLoc = loc; rest = rest } ->
+    let simpleParser = fmap (fun (loc, src) -> (loc, int(src))) (token "123")
+
+    match parse simpleParser (bof, argv.[0]) with
+    | Some { ast = ast; currentLoc = loc; rest = rest } ->
         printfn "Success!"
+        printfn "parsedTo: %d" <| snd ast
         printfn "currentLoc: %s" <| loc.ToString ()
         printfn "rest: \"%s\"" rest
     | None ->
