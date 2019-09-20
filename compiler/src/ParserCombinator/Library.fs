@@ -98,3 +98,5 @@ let succeed ast =
         parse = fun (loc, rest) -> Some { ast = ast; currentLoc = loc; rest = rest }
         error = None
     }
+
+let option defaultAst p = p <|> succeed defaultAst
