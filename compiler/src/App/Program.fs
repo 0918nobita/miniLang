@@ -1,4 +1,6 @@
-﻿type Expr =
+﻿open ParserCombinator
+
+type Expr =
     | IntLiteral of value : int
     | Add of lhs : Expr * rhs : Expr
 
@@ -11,13 +13,11 @@ let rec showExpr =
 
 [<EntryPoint>]
 let main argv =
-    Add
-        (lhs = 
-            Add
-                (lhs = IntLiteral(value = 1),
-                 rhs = IntLiteral (value = 2)),
-         rhs =
-            IntLiteral (value = 4))
-    |> showExpr
-    |> printfn "%s"
+    match parse (token "ab") (bof, argv.[0]) with
+    | Some { ast = _; currentLoc = loc; rest = rest } ->
+        printfn "Success!"
+        printfn "currentLoc: %s" <| loc.ToString ()
+        printfn "rest: \"%s\"" rest
+    | None ->
+        printfn "Failed..."
     0
