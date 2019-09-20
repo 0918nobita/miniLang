@@ -14,8 +14,7 @@ let rec showExpr =
 [<EntryPoint>]
 let main argv =
     let simpleParser =
-        (succeed (fun (loc, str) -> (loc, str + "!")) <*> (token "123"))
-        <|> token "456"
+        (token "a" <|> token "b") |. token "c"
 
     match parse simpleParser (bof, argv.[0]) with
     | Some { ast = ast; currentLoc = loc; rest = rest } ->
