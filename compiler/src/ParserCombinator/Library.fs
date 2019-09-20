@@ -21,12 +21,26 @@ type Parser<'a> =
         error : (Location -> unit) option
     }
 
-let parse (p : Parser<'a>) (loc : Location) (src : string) =
+let parse (p : Parser<'a>) (loc : Location, src : string) =
     let result = p.parse (loc, src)
     match (result, p.error) with
     | (Some _, _) -> result
     | (None, None) -> None
     | (None, Some f) -> f (loc); failwith "SyntaxError"
+
+let fmap (f : 'a -> 'b) (p : Parser<'a>) =
+    {
+        parse = fun input ->
+            input
+            |> parse p
+            |> Option.map (fun result ->
+                {
+                    ast = f result.ast
+                    currentLoc = result.currentLoc
+                    rest = result.rest
+                })
+        error = p.error
+    }
 
 let token (tok : string) =
     {
