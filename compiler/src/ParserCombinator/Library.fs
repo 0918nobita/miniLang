@@ -21,7 +21,7 @@ type Parser<'a> =
         error : (Location -> unit) option
     }
 
-let pureParser ast =
+let succeed ast =
     {
         parse = fun (loc, rest) -> [{ ast = ast; currentLoc = loc; rest = rest }]
         error = None
