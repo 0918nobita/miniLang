@@ -108,3 +108,5 @@ let rec many p =
     option [] (p |= fun r -> many p |= fun rs -> succeed (r :: rs))
 
 let some p = p <~> many p
+
+let drop p = p |. succeed ()
