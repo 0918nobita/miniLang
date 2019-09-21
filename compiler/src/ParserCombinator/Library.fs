@@ -142,3 +142,6 @@ let item =
                 }
         error = None
     }
+
+let satisfy f =
+    item |= fun c -> if f c then succeed c else mzero
