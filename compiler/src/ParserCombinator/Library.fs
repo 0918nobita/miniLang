@@ -124,3 +124,21 @@ let mzero =
         parse = fun _ -> None
         error = None
     }
+
+let item =
+    {
+        parse = function
+            | (_, "") -> None
+            | (loc, src) ->
+                let c = src.[0]
+                Some {
+                    ast = (loc, c)
+                    currentLoc =
+                        loc +
+                        (if c = '\n'
+                            then { line = 1; chr = 0 }
+                            else { line = 0; chr  = 1 })
+                    rest = src.Substring (1, (String.length src - 1))
+                }
+        error = None
+    }
