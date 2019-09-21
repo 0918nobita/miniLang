@@ -118,3 +118,9 @@ let expect p errorHandler =
         parse = parse p
         error = Some errorHandler
     }
+
+let mzero =
+    {
+        parse = fun _ -> None
+        error = None
+    }
