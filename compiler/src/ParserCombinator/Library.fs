@@ -112,3 +112,9 @@ let rec many p =
 let some p = p <~> many p
 
 let drop p = p |. succeed ()
+
+let expect p errorHandler =
+    {
+        parse = parse p
+        error = Some errorHandler
+    }
