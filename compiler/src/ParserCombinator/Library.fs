@@ -21,12 +21,14 @@ type Parser<'a> =
         error : (Location -> unit) option
     }
 
+exception ParserException of Location * (Location -> unit)
+
 let parse (p : Parser<'a>) (loc : Location, src : string) =
     let result = p.parse (loc, src)
     match (result, p.error) with
     | (Some _, _) -> result
     | (None, None) -> None
-    | (None, Some f) -> f (loc); failwith "SyntaxError"
+    | (None, Some f) -> raise (ParserException (loc, f))
 
 let fmap (f : 'a -> 'b) (p : Parser<'a>) =
     {
