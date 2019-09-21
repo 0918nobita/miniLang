@@ -13,28 +13,25 @@ let rec showExpr =
 
 [<EntryPoint>]
 let main argv =
-    let expectD =
-        expect
-            (token "d")
-            (fun loc -> printfn "(%s) expected: \"d\"" <| loc.ToString ())
+    if Array.isEmpty argv
+        then -1
+        else
+            let simpleParser =
+                some <| oneOf "1234"
 
-    let simpleParser =
-        (token "a" <|> token "b") |. token "c" |. expectD
+            try
+                let result = parse simpleParser (bof, argv.[0])
 
-    try
-        let result = parse simpleParser (bof, argv.[0])
-
-        match result with
-        | Some { ast = ast; currentLoc = loc; rest = rest } ->
-            printfn "Success!"
-            printfn "parsedTo: \"%s\"" <| snd ast
-            printfn "currentLoc: %s" <| loc.ToString ()
-            printfn "rest: \"%s\"" rest
-            0
-        | None ->
-            printfn "Failed..."
-            -1
-    with
-    | ParserException (loc, f) ->
-        f loc
-        -1
+                match result with
+                | Some { ast = _; currentLoc = loc; rest = rest } ->
+                    printfn "Success!"
+                    printfn "currentLoc: %s" <| loc.ToString ()
+                    printfn "rest: \"%s\"" rest
+                    0
+                | None ->
+                    printfn "Failed..."
+                    -1
+            with
+            | ParserException (loc, f) ->
+                f loc
+                -1
