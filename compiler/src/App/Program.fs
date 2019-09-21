@@ -13,15 +13,28 @@ let rec showExpr =
 
 [<EntryPoint>]
 let main argv =
-    let simpleParser =
-        (token "a" <|> token "b") |. token "c"
+    let expectD =
+        expect
+            (token "d")
+            (fun loc -> printfn "(%s) expected: \"d\"" <| loc.ToString ())
 
-    match parse simpleParser (bof, argv.[0]) with
-    | Some { ast = ast; currentLoc = loc; rest = rest } ->
-        printfn "Success!"
-        printfn "parsedTo: \"%s\"" <| snd ast
-        printfn "currentLoc: %s" <| loc.ToString ()
-        printfn "rest: \"%s\"" rest
-    | None ->
-        printfn "Failed..."
-    0
+    let simpleParser =
+        (token "a" <|> token "b") |. token "c" |. expectD
+
+    try
+        let result = parse simpleParser (bof, argv.[0])
+
+        match result with
+        | Some { ast = ast; currentLoc = loc; rest = rest } ->
+            printfn "Success!"
+            printfn "parsedTo: \"%s\"" <| snd ast
+            printfn "currentLoc: %s" <| loc.ToString ()
+            printfn "rest: \"%s\"" rest
+            0
+        | None ->
+            printfn "Failed..."
+            -1
+    with
+    | ParserException (loc, f) ->
+        f loc
+        -1
