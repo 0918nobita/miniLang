@@ -147,3 +147,6 @@ let satisfy f =
     item |= fun c -> if f c then succeed c else mzero
 
 let char c = satisfy (fun (_, c') -> c = c')
+
+let oneOf (cs : string) =
+    satisfy (fun (_, c) -> cs.IndexOf c <> -1 )
