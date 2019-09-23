@@ -40,6 +40,20 @@ let s = SampleBuilder()
 
 s { printfn "HELLO" }
 
+type OptionBuilder() =
+    member __.Return(x) = Some x
+    member __.ReturnFrom(x: _ option) = x
+    member __.Bind(x, f) =
+        Option.bind f x
+
+let opt = OptionBuilder()
+
+printfn "%A" <| opt { return 0 }  // opt.Return(0)
+printfn "%A" <| opt { return! Some 27 }  // opt.ReturnFrom(Some 27)
+
+printfn "%A" <| opt { let! a = Some 1 in return a }
+// opt.Bind(Some 1, fun a -> option.Return(a))
+
 [<EntryPoint>]
 let main argv =
     if Array.isEmpty argv
