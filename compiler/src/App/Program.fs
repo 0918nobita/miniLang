@@ -11,6 +11,22 @@ let rec showExpr =
     | Add(lhs, rhs) ->
         "Add(" + (showExpr lhs) + ", " + (showExpr rhs) + ")"
 
+type ZeroBuilder() =
+    member __.Zero() =
+        printfn "computation expressions!"
+
+let zero = ZeroBuilder()
+
+// ビルダー式に関係のない式のみを記述した場合には、
+// Zero メソッドの呼び出しが挿入される
+zero { () }
+zero { printfn "Hello" }
+zero { printf "Hello "; printfn "F#" }
+
+// builder-expr { cexpr } は
+//   let b = builder-expr in
+//   b.Run(<@ b.Delay(fun () -> cexpr) @>)
+// のように展開される
 [<EntryPoint>]
 let main argv =
     if Array.isEmpty argv
