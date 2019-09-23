@@ -8,7 +8,6 @@
     "files.exclude": {
       "**/.git": true,
       "**/_build": true,
-      "**/*.wasm": true,
       "**/*.cmi": true,
       "**/*.cmx": true,
       "**/*.cmo": true,
