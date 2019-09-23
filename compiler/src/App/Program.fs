@@ -27,6 +27,19 @@ zero { printf "Hello "; printfn "F#" }
 //   let b = builder-expr in
 //   b.Run(<@ b.Delay(fun () -> cexpr) @>)
 // のように展開される
+
+open FSharp.Quotations
+
+type SampleBuilder() =
+    member __.Zero() = ()
+    member __.Quote() = ()
+    member __.Run(expr: Expr<_>) =
+        printfn "%A" expr
+
+let s = SampleBuilder()
+
+s { printfn "HELLO" }
+
 [<EntryPoint>]
 let main argv =
     if Array.isEmpty argv
