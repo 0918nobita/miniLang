@@ -1,1 +1,3 @@
 wasm-examples/lucet/* linguist-vendored
+*.wat linguist-documentation
+*.txt linguist-documentation
