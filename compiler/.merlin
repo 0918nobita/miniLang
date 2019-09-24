@@ -1,4 +1,0 @@
-PKG base
-PKG stdio
-B ../binary-utils
-B ../parser-combinator
