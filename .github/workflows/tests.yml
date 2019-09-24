@@ -9,6 +9,8 @@ jobs:
       matrix:
         dotnet: ['2.2.401', '2.1.801']
     steps:
+    - name: check SHA
+      run: echo $GITHUB_SHA
     - uses: actions/checkout@v1
     - run: pwd && ls -la
     - name: Setup dotnet
