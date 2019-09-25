@@ -47,7 +47,7 @@
           (set_local $operand_1 (i32.load (get_global $pc)))
           (call $push (get_local $operand_1))
           (set_global $pc (i32.add (get_global $pc) (i32.const 4)))
-          (br 1)))
+          br 1))
 
       (; i32.add ;)
       (if (i32.eq (get_local $opcode) (i32.const 2))
@@ -57,7 +57,7 @@
           (set_local $operand_1 (call $pop))
           (call $push (i32.add (get_local $operand_1) (get_local $operand_2)))
           (set_global $pc (i32.add (get_global $pc) (i32.const 4)))
-          (br 1)))
+          br 1))
 
       unreachable))
 
