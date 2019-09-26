@@ -1,4 +1,5 @@
 ﻿open System
+open System.Collections.Generic
 open ParserCombinator
 
 type ExprAST =
