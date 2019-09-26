@@ -4,6 +4,7 @@ open ParserCombinator
 type ExprAST =
     | IntLiteral of loc : Location * value : int
     | Minus of loc : Location * expr : ExprAST
+    | InfixOp of loc : Location * name : string
 
 let zero = char '0'
 
@@ -39,6 +40,15 @@ let identifier =
                 |> List.toArray
                 |> String
             succeed (loc, name)))
+
+let infixOperator =
+    some (oneOf "!$%&*+-./:<=>?@^|~")
+    |= (fun cs ->
+        let name =
+            List.map snd cs
+            |> List.toArray
+            |> String
+        succeed <| InfixOp (fst (List.head cs), name))
 
 let opPriority =
     [("+", 2); ("-", 2); ("*", 3); ("/", 3)]
@@ -107,7 +117,7 @@ let main argv =
         then -1
         else
             try
-                let result = parse (unary <*> nat) (bof, argv.[0])
+                let result = parse infixOperator (bof, argv.[0])
 
                 match result with
                 | Some { ast = ast; currentLoc = loc; rest = rest } ->
