@@ -40,8 +40,69 @@ let identifier =
                 |> String
             succeed (loc, name)))
 
+let opPriority =
+    [("+", 2); ("-", 2); ("*", 3); ("/", 3)]
+
+let isOperator token =
+    opPriority
+    |> List.exists (fun item -> fst item = token)
+
+let getOpPriority token =
+    opPriority
+    |> List.find (fun item -> fst item = token)
+    |> snd
+
+type Tree =
+    | TInt of value : int
+    | TInfixApply of op : string * lhs : Tree * rhs : Tree
+
+let parseExpr (expr : string) =
+    let ops = Stack<string>() // 演算子のスタック
+    let terms = Stack<Tree>() // 項のスタック
+    let tokens = expr.Split([|' '|])
+    tokens
+    |> Array.iter (function
+        | token when isOperator token ->
+            let mutable breakNow = false
+            while (not breakNow) && ops.Count > 0 do
+                let lastOp = ops.Pop()
+                if isOperator lastOp && getOpPriority token <= getOpPriority lastOp
+                    then
+                        let right = terms.Pop()
+                        let left = terms.Pop()
+                        terms.Push(TInfixApply (lastOp, left, right))
+                    else
+                        ops.Push(lastOp)
+                        breakNow <- true
+            ops.Push(token)
+        | token when fst <| Int32.TryParse(token) ->
+            terms.Push(TInt <| Int32.Parse(token))
+        | "(" ->
+            ops.Push("(")
+        | ")" ->
+            let mutable breakNow = false
+            while (not breakNow) && ops.Count > 0 do
+                let op = ops.Pop()
+                if op = "("
+                    then
+                        breakNow <- true
+                    else
+                        let right = terms.Pop()
+                        let left = terms.Pop()
+                        terms.Push(TInfixApply (op, left, right))
+        | _ -> failwith "Invalid expr")
+    while ops.Count > 0 do
+        let op = ops.Pop()
+        if isOperator op
+            then
+                let right = terms.Pop()
+                let left = terms.Pop()
+                terms.Push(TInfixApply (op, left, right))
+    terms.Pop()
+
 [<EntryPoint>]
 let main argv =
+    printfn "%A" <| parseExpr "( 1 + 2 * 3 + 4 )"
     if Array.isEmpty argv
         then -1
         else
