@@ -30,7 +30,10 @@
     (i32.store (i32.const 20) (i32.const 1))  (; i32.const ;)
     (i32.store (i32.const 24) (i32.const 1))  (; 1 ;)
     (i32.store (i32.const 28) (i32.const 3))  (; i32.sub ;)
-    (i32.store (i32.const 32) (i32.const 0))) (; bye ;)
+    (i32.store (i32.const 32) (i32.const 1))  (; i32.const ;)
+    (i32.store (i32.const 36) (i32.const 9))  (; 9 ;)
+    (i32.store (i32.const 40) (i32.const 4))  (; i32.mul ;)
+    (i32.store (i32.const 44) (i32.const 0))) (; bye ;)
 
   (func $advance
     (set_global $pc (i32.add (get_global $pc) (i32.const 4))))
@@ -70,6 +73,14 @@
           (set_local $operand_2 (call $pop))
           (set_local $operand_1 (call $pop))
           (call $push (i32.sub (get_local $operand_1) (get_local $operand_2)))
+          (call $advance)
+          br 1))
+
+      (if (i32.eq (get_local $opcode) (i32.const 4))
+        (then
+          (set_local $operand_2 (call $pop))
+          (set_local $operand_1 (call $pop))
+          (call $push (i32.mul (get_local $operand_1) (get_local $operand_2)))
           (call $advance)
           br 1))
 
