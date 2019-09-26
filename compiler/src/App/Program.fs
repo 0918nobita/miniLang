@@ -13,7 +13,10 @@ let digit = zero <|> nonZeroDigit
 
 let unary =
     let plus = char '+' |. succeed id
-    let minus = char '-' |= (fun (loc, _) -> succeed (fun ast -> Minus (loc, ast)))
+    let minus =
+        char '-'
+        |= (fun (loc, _) ->
+            succeed (fun ast -> Minus (loc, ast)))
     plus <|> minus <|> succeed id
 
 let nat =
