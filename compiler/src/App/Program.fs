@@ -1,25 +1,34 @@
-﻿open ParserCombinator
+﻿open System
+open ParserCombinator
 
-type Expr =
-    | IntLiteral of loc : Location * value : int
-    | Add of loc : Location * lhs : Expr * rhs : Expr
-    | Sub of loc : Location * lhs : Expr * rhs : Expr
+let letter =
+    oneOf "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+let digit = oneOf "0123456789"
+
+let identifier =
+    letter
+    |= (fun (loc, head) ->
+        many (letter <|> digit)
+        |= (fun cs ->
+            let name =
+                head :: (List.map snd cs)
+                |> List.toArray
+                |> String
+            succeed (loc, name)))
 
 [<EntryPoint>]
 let main argv =
-    printfn "%A" <| IntLiteral(bof, 8)
     if Array.isEmpty argv
         then -1
         else
-            let simpleParser =
-                some <| oneOf "1234"
-
             try
-                let result = parse simpleParser (bof, argv.[0])
+                let result = parse identifier (bof, argv.[0])
 
                 match result with
-                | Some { ast = _; currentLoc = loc; rest = rest } ->
+                | Some { ast = ast; currentLoc = loc; rest = rest } ->
                     printfn "Success!"
+                    printfn "ast: %A" <| snd ast
                     printfn "currentLoc: %s" <| loc.ToString ()
                     printfn "rest: \"%s\"" rest
                     0
