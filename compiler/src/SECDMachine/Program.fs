@@ -47,6 +47,18 @@ let run () =
             printfn "DROP"
             ignore <| pop ()
             pc <- pc + 1
+        | 10 ->
+            printfn "ADD"
+            let rhs = pop ()
+            let lhs = pop ()
+            push (lhs + rhs)
+            pc <- pc + 1
+        | 11 ->
+            printfn "MUL"
+            let rhs = pop ()
+            let lhs = pop ()
+            push (lhs * rhs)
+            pc <- pc + 1
         | _ ->
             failwith "unknown opcode"
 
