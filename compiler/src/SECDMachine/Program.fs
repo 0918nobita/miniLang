@@ -16,7 +16,7 @@ let pop () =
     printfn "  (Pop %d)" mem.[sp]
     mem.[sp]
 
-let env = Stack<Dictionary<string, int>>()
+let env : int list list = []
 
 let run () =
     let mutable breakNow = false
