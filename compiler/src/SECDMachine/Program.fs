@@ -7,11 +7,13 @@ let mutable pc = 0
 let mutable sp = 99999
 
 let push n =
+    printfn "  (Push %d)" n
     mem.[sp] <- n
     sp <- sp - 1
 
 let pop () =
     sp <- sp + 1
+    printfn "  (Pop %d)" mem.[sp]
     mem.[sp]
 
 let env = Stack<Dictionary<string, int>>()
