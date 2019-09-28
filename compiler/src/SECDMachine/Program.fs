@@ -26,6 +26,27 @@ let run () =
         | 0 ->
             printfn "STOP"
             breakNow <- true
+        | 1 ->
+            printf "LD "
+            pc <- pc + 1
+            let i = mem.[pc]
+            printf "%d, " i
+            pc <- pc + 1
+            let j = mem.[pc]
+            printfn "%d" j
+            push env.[i].[j]
+            pc <- pc + 1
+        | 2 ->
+            printf "LDC "
+            pc <- pc + 1
+            let n = mem.[pc]
+            printfn "%d" n
+            push n
+            pc <- pc + 1
+        | 9 ->
+            printfn "DROP"
+            ignore <| pop ()
+            pc <- pc + 1
         | _ ->
             failwith "unknown opcode"
 
