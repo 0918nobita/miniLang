@@ -184,147 +184,130 @@ D:               d => d
 
 【LDC 8】
 
-空き領域から「8 を car 部に保存するコンスセル」の領域を確保・書き込み
-19 |  8  (car)
-20 |  0  (cdr)
-s にはコンスセルのアドレスを格納
-f <- f + 2
+8 を push
 c <- c + 2
-{ s = 19; e = nil; c = 2; d = nil; f = 21 }
+{ s = [8]; e = nil; c = 2; d = nil; f = 19 }
 
 
 【LDC 2】
 
-「2 を car 部に保存するコンスセル」の領域を確保・書き込み
-21 |  2  (car)
-22 | 19  (cdr)
-s には新しいコンスセルのアドレスを格納
-f <- f + 2
+2 を push
 c <- c + 2
-{ s = 21; e = nil; c = 4; d = nil; f = 23 }
+{ s = [2; 8]; e = nil; c = 4; d = nil; f = 19 }
 
 
 【ARGS 1】
 
-s の指す線形リストの先頭要素を捨てて値 v を一時保存する
-{ s = 19; e = nil; c = 4; d = nil; f = 23 } (v = 2)
+pop した値 v を一時保存する
+{ s = [8]; e = nil; c = 4; d = nil; f = 19 } (v = 2)
 
 配列 args = [v] の領域を確保・書き込み
-23 |  2
-値 v を破棄
+19 |  2
 f <- f + 1
-{ s = 19; e = nil; c = 4; d = nil; f = 24 }
-
-「配列 args のポインタを car 部に保存するコンスセル」の領域を確保・書き込み
-24 | 23  (car)
-25 | 19  (cdr)
-s に新しいコンスセルのアドレスを格納
-f <- f + 2
+値 v を破棄
+配列 args の先頭アドレスを push 
 c <- c + 2
-{ s = 24; e = nil; c = 6; d = nil; f = 26 }
+{ s = [19; 8]; e = nil; c = 6; d = nil; f = 20 }
 
 
 【APP】
 
 c <- c + 1
-s の線形リストの先頭要素を取り出し、値 args として一時保存
-{ s = 19; e = nil; c = 7; d = nil; f = 26 } (args = 23)
+pop した値 args を一時保存する
+{ s = [8]; e = nil; c = 7; d = nil; f = 20 } (args = 19)
 
-s の線形リストの先頭要素を取り出し、値 closure として一時保存
-{ s = nil; e = nil; c = 7; d = nil; f = 26 } (args = 23, closure = 8)
+pop した値 closure を一時保存する
+{ s = []; e = nil; c = 7; d = nil; f = 20 } (args = 19, closure = 8)
 
-配列 dump = [s, e, c] の領域を確保・書き込み
-26 |  0
-27 |  0
-28 |  7
+配列 dump の領域を確保・書き込み
+20 |  0  (スタックの要素数)
+21 |  0  (env addr)
+22 |  7  (program counter)
+※ スタックの要素数が 1 以上の場合、要素数に続けて各要素の値を順番に書き込む
 f <- f + 3
-s <- nil
-{ s = nil; e = nil; c = 7; d = nil; f = 29 } (args = 23, closure = 8)
+スタックを空にする
+{ s = []; e = nil; c = 7; d = nil; f = 23 } (args = 19, closure = 8)
 
 dump を線形リスト d の先頭に追加
-29 | 26  (car)
-30 |  0  (cdr)
+23 | 20  (car)
+24 |  0  (cdr)
 f <- f + 2
-{ s = nil; e = nil; c = 7; d = 29; f = 31 } (args = 23, closure = 8)
+{ s = []; e = nil; c = 7; d = 23; f = 25 } (args = 19, closure = 8)
 
 closure 番地に格納されている値を、
 環境のアドレスとして線形リスト e の先頭に追加
-31 | 17  (car)
-32 |  0  (cdr)
+25 | 17  (car)
+26 |  0  (cdr)
 f <- f + 2
-{ s = nil; e = 31; c = 7; d = 29; f = 33 } (args = 23, closure = 8)
+{ s = []; e = 25; c = 7; d = 23; f = 27 } (args = 19, closure = 8)
 
 値 args を線形リスト e の先頭に追加
-33 | 23  (car)
-34 | 26  (cdr)
+27 | 19  (car)
+28 | 25  (cdr)
 f <- f + 2
 値 args を破棄
-{ s = nil; e = 33; c = 7; d = 29; f = 35 } (closure = 8)
+{ s = []; e = 27; c = 7; d = 23; f = 29 } (closure = 8)
 
 c <- closure + 1
 値 closure を破棄
-{ s = nil; e = 33; c = 9; d = 29; f = 35 }
+{ s = []; e = 27; c = 9; d = 23; f = 29 }
 
 
 【LD 0, 0】
 
 線形リスト e の 0 番目の要素を取得し、値 frame として一時保存する
-{ s = nil; e = 33; c = 9; d = 29; f = 35 } (frame = 23)
+{ s = []; e = 27; c = 9; d = 23; f = 29 } (frame = 19)
 
 配列 frame の 0 番目の要素を取得し、値 arg1 として一時保存する
 値 frame を破棄
-{ s = nil; e = 33; c = 9; d = 29; f = 35 } (arg1 = 2)
+{ s = []; e = 27; c = 9; d = 23; f = 29 } (arg1 = 2)
 
-値 arg1 を線形リスト s の先頭に追加する
-35 |  2  (car)
-36 |  0  (cdr)
-f <- f + 2
+値 arg1 を push する
 c <- c + 3
 値 arg1 を破棄
-{ s = 35; e = 33; c = 12; d = 29; f = 37 }
+{ s = [2]; e = 27; c = 12; d = 23; f = 29 }
 
 
 【LDC 1】
 
-1 を線形リスト s の先頭に追加する
-37 |  1  (car)
-38 |  35  (cdr)
-f <- f + 2
+1 を push する
 c <- c + 2
-{ s = 37; e = 33; c = 14; d = 29; f = 39 }
+{ s = [1; 2]; e = 27; c = 14; d = 23; f = 29 }
 
 
 【ADD】
 
-線形リスト s の先頭要素を取り出し、値 rhs として一時保存する
-{ s = 35; e = 33; c = 14; d = 29; f = 39 } (rhs = 1)
+pop した値 rhs を一時保存する
+{ s = [2]; e = 27; c = 14; d = 23; f = 29 } (rhs = 1)
 
-線形リスト s の先頭要素を取り出し、値 lhs として一時保存する
-{ s = nil; e = 33; c = 14; d = 29; f = 39 } (rhs = 1; lhs = 2)
+pop した値 lhs を一時保存する
+{ s = []; e = 27; c = 14; d = 23; f = 29 } (rhs = 1; lhs = 2)
 
-lhs + rhs を線形リスト s の先頭に追加する
-39 |  3  (car)
-40 |  0  (cdr)
-f <- f + 2
-c <- 1
+lhs + rhs を push する
+c <- c + 1
 値 lhs, rhs を破棄
-{ s = 39; e = 33; c = 15; d = 29; f = 41 }
+{ s = [3]; e = 27; c = 15; d = 23; f = 29 }
 
 
 【RTN】
 
 線形リスト d の先頭要素を取り出し、値 dump として一時保存する
-線形リスト s の先頭のコンスセルの cdr 部に、dump[0] を書き込む
-39 |  3  (car)
-40 |  0  (cdr)
-{ s = 39; e = 33; c = 15; d = nil; f = 41 } (dump = 26)
+pop した値 rv を一時保存する
+スタックを空にする
+{ s = []; e = 27; c = 15; d = nil; f = 29 } (dump = 20, rv = 3)
 
-e <- dump[1]
-c <- dump[2]
-値 dump を破棄
-{ s = 39; e = 0; c = 7; d = nil; f = 41 }
+let i = 0;
+while (i < dump[0]) {
+  s.push(dump[i + 1]);
+  i++;
+}
+s.push(rv);
+e <- dump[i + 1]
+c <- dump[i + 2]
+値 dump, rv を破棄
+{ s = [3]; e = 0; c = 7; d = nil; f = 29 }
 
 
 【STOP】
-実行結果：線形リスト S = [3]
+実行結果：[3]
 ```
