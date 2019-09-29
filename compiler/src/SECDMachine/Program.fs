@@ -43,17 +43,17 @@ let run () =
             printfn "%d" n
             push n
             pc <- pc + 1
-        | 9 ->
+        | 8 ->
             printfn "DROP"
             ignore <| pop ()
             pc <- pc + 1
-        | 10 ->
+        | 9 ->
             printfn "ADD"
             let rhs = pop ()
             let lhs = pop ()
             push (lhs + rhs)
             pc <- pc + 1
-        | 11 ->
+        | 10 ->
             printfn "MUL"
             let rhs = pop ()
             let lhs = pop ()
