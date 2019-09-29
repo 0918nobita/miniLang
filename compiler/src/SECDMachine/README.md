@@ -60,7 +60,7 @@ D:                    d => d
 スタックのトップがクロージャの場合：
 
 ```
-S: (closure code env) :: vs :: s => []
+S: vs :: (closure code env) :: s => []
 E:                             e => vs :: env
 C:                    (app) :: c => code
 D:                             d => [s e c] :: d
@@ -69,7 +69,7 @@ D:                             d => [s e c] :: d
 組み込み関数の場合：
 
 ```
-S: #prim :: vs :: s => (apply #prim vs) :: s
+S: vs :: #prim :: s => (apply #prim vs) :: s
 E:                e => e
 C:       (app) :: c => c
 D:                d => d
