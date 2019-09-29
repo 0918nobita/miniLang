@@ -6,6 +6,8 @@ let mutable c = 0
 
 let mutable e = 0
 
+let mutable d = 0
+
 let mutable sp = 99999
 
 let push n =
@@ -18,6 +20,13 @@ let pop () =
     printfn "  (Pop %d)" mem.[sp]
     mem.[sp]
 
+let getStackSize () =
+    99999 - sp
+
+let clearStack () =
+    sp <- 99999
+
+let mutable f = 19
 
 let run () =
     let mutable breakNow = false
@@ -56,6 +65,54 @@ let run () =
                 f <- f + 1
             push headAddr
             c <- c + 1
+        | 4 ->
+            printfn "APP"
+            c <- c + 1
+            let args = pop ()
+            let closure = pop ()
+            let dump = f
+            let size = getStackSize ()
+            mem.[f] <- size
+            f <- f + 1
+            for _ in 1 .. size do
+                mem.[f] <- pop ()
+                f <- f + 1
+            mem.[f] <- e
+            f <- f + 1
+            mem.[f] <- c
+            f <- f + 1
+            let d' = f
+            mem.[f] <- dump
+            f <- f + 1
+            mem.[f] <- d
+            f <- f + 1
+            d <- d'
+            let e' = f
+            mem.[f] <- mem.[closure]
+            f <- f + 1
+            mem.[f] <- e
+            f <- f + 1
+            e <- e'
+            let e'' = f
+            mem.[f] <- args
+            f <- f + 1
+            mem.[f] <- e'
+            f <- f + 1
+            e <- e''
+            c <- closure + 1
+        | 5 ->
+            printfn "RTN"
+            let dump = mem.[d]
+            d <- mem.[d + 1]
+            let rv = pop ()
+            clearStack ()
+            let mutable i = 0
+            while i < mem.[dump] do
+                push mem.[dump + i + 1]
+                i <- i + 1
+            push rv
+            e <- mem.[dump + i + 1]
+            c <- mem.[dump + i + 2]
         | 8 ->
             printfn "DROP"
             ignore <| pop ()
