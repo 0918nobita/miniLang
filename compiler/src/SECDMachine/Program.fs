@@ -26,6 +26,35 @@ let getStackSize () =
 let clearStack () =
     sp <- 99999
 
+// LDC 8
+mem.[0] <- 2; mem.[1] <- 8
+// LDC 2
+mem.[2] <- 2; mem.[3] <- 2
+// ARGS 1
+mem.[4] <- 3; mem.[5] <- 1
+// APP
+mem.[6] <- 4
+// STOP
+mem.[7] <- 0
+
+// env addr
+mem.[8] <- 17
+// LD 0, 0
+mem.[9] <- 1; mem.[10] <- 0; mem.[11] <- 0
+// LDC 1
+mem.[12] <- 2; mem.[13] <- 1
+// ADD
+mem.[14] <- 9
+// RTN
+mem.[15] <- 5
+
+// fun a -> a + 1 の持つフレーム F (配列)
+mem.[16] <- 0
+
+// フレーム F を追加した環境 (線形リスト)
+mem.[17] <- 16  // car
+mem.[18] <- 0   // cdr
+
 let mutable f = 19
 
 let run () =
@@ -135,4 +164,7 @@ let run () =
 [<EntryPoint>]
 let main _ =
     run ()
+    printfn "\n%A" mem
+    printfn ""
+    printfn "Result: %d" <| pop ()
     0
