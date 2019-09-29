@@ -48,14 +48,10 @@ mem.[14] <- 9
 // RTN
 mem.[15] <- 5
 
-// fun a -> a + 1 の持つフレーム F (配列)
+// クロージャの持つ環境 (線形リスト、ここでは nil)
 mem.[16] <- 0
 
-// フレーム F を追加した環境 (線形リスト)
-mem.[17] <- 16  // car
-mem.[18] <- 0   // cdr
-
-let mutable f = 19
+let mutable f = 17
 
 let run () =
     let mutable breakNow = false
