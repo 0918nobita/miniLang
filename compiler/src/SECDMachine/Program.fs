@@ -103,9 +103,11 @@ let run () =
             let size = getStackSize ()
             mem.[f] <- size
             f <- f + 1
+
             for _ in 1 .. size do
                 mem.[f] <- pop ()
                 f <- f + 1
+
             mem.[f] <- e
             f <- f + 1
             mem.[f] <- c
@@ -136,9 +138,11 @@ let run () =
             let rv = pop ()
             clearStack ()
             let mutable i = 0
+
             while i < mem.[dump] do
                 push mem.[dump + i + 1]
                 i <- i + 1
+
             push rv
             e <- mem.[dump + i + 1]
             c <- mem.[dump + i + 2]
@@ -164,7 +168,6 @@ let run () =
 [<EntryPoint>]
 let main _ =
     run ()
-    printfn "\n%A" mem
-    printfn ""
+    printfn "\n%A\n" mem
     printfn "Result: %d" <| pop ()
     0
