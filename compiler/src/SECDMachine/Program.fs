@@ -4,6 +4,8 @@ let mem = Array.init 100000 (fun _ -> 0)
 
 let mutable c = 0
 
+let mutable e = 0
+
 let mutable sp = 99999
 
 let push n =
@@ -16,7 +18,6 @@ let pop () =
     printfn "  (Pop %d)" mem.[sp]
     mem.[sp]
 
-let env : int list list = []
 
 let run () =
     let mutable breakNow = false
@@ -34,7 +35,8 @@ let run () =
             c <- c + 1
             let j = mem.[c]
             printfn "%d" j
-            push env.[i].[j]
+            let frame = mem.[e + i]
+            push mem.[frame + j]
             c <- c + 1
         | 2 ->
             printf "LDC "
