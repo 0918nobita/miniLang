@@ -2,7 +2,7 @@
 
 let mem = Array.init 100000 (fun _ -> 0)
 
-let mutable pc = 0
+let mutable c = 0
 
 let mutable sp = 99999
 
@@ -21,44 +21,55 @@ let env : int list list = []
 let run () =
     let mutable breakNow = false
     while not breakNow do
-        let opcode = mem.[pc]
+        let opcode = mem.[c]
         match opcode with
         | 0 ->
             printfn "STOP"
             breakNow <- true
         | 1 ->
             printf "LD "
-            pc <- pc + 1
-            let i = mem.[pc]
+            c <- c + 1
+            let i = mem.[c]
             printf "%d, " i
-            pc <- pc + 1
-            let j = mem.[pc]
+            c <- c + 1
+            let j = mem.[c]
             printfn "%d" j
             push env.[i].[j]
-            pc <- pc + 1
+            c <- c + 1
         | 2 ->
             printf "LDC "
-            pc <- pc + 1
-            let n = mem.[pc]
+            c <- c + 1
+            let n = mem.[c]
             printfn "%d" n
             push n
-            pc <- pc + 1
+            c <- c + 1
+        | 3 ->
+            printf "ARGS "
+            c <- c + 1
+            let length = mem.[c]
+            printfn "%d" length
+            let headAddr = f
+            for _ in 1 .. length do
+                mem.[f] <- pop ()
+                f <- f + 1
+            push headAddr
+            c <- c + 1
         | 8 ->
             printfn "DROP"
             ignore <| pop ()
-            pc <- pc + 1
+            c <- c + 1
         | 9 ->
             printfn "ADD"
             let rhs = pop ()
             let lhs = pop ()
             push (lhs + rhs)
-            pc <- pc + 1
+            c <- c + 1
         | 10 ->
             printfn "MUL"
             let rhs = pop ()
             let lhs = pop ()
             push (lhs * rhs)
-            pc <- pc + 1
+            c <- c + 1
         | _ ->
             failwith "unknown opcode"
 
