@@ -99,6 +99,16 @@ let executeLDC () =
     push literal
     c <- c + 1
 
+let executeARGS () =
+    printf "ARGS "
+    let length = advance ()
+    printfn "%d" length
+    let argsAddr = f
+    for _ in 1 .. length do
+        write <| pop ()
+    push argsAddr
+    c <- c + 1
+
 let run () =
     let mutable breakNow = false
     while not breakNow do
@@ -112,17 +122,7 @@ let run () =
         | 2 ->
             executeLDC ()
         | 3 ->
-            printf "ARGS "
-            c <- c + 1
-            let length = mem.[c]
-            printfn "%d" length
-            let headAddr = f
-
-            for _ in 1 .. length do
-                write <| pop ()
-
-            push headAddr
-            c <- c + 1
+            executeARGS ()
         | 4 ->
             printfn "APP"
             c <- c + 1
