@@ -26,32 +26,53 @@ let getStackSize () =
 let clearStack () =
     sp <- 99999
 
-// LDC 8
-mem.[0] <- 2; mem.[1] <- 8
-// LDC 3
-mem.[2] <- 2; mem.[3] <- 3
-// ARGS 1
-mem.[4] <- 3; mem.[5] <- 1
-// APP
-mem.[6] <- 4
-// STOP
-mem.[7] <- 0
-
-// env addr
-mem.[8] <- 17
-// LD 0, 0
-mem.[9] <- 1; mem.[10] <- 0; mem.[11] <- 0
+// LDC A(= 12)
+mem.[0] <- 2; mem.[1] <- 12
+// LDC B(= 26)
+mem.[2] <- 2; mem.[3] <- 7
+// LDC 5
+mem.[4] <- 2; mem.[5] <- 5
 // LDC 7
-mem.[12] <- 2; mem.[13] <- 7
-// MUL
-mem.[14] <- 10
+mem.[6] <- 2; mem.[7] <- 26
+// ARGS 3
+mem.[8] <- 3; mem.[9] <- 3
+// APP
+mem.[10] <- 4
+// STOP
+mem.[11] <- 0
+
+// func A
+// env addr
+mem.[12] <- 35
+// LD 0, 0
+mem.[13] <- 1; mem.[14] <- 0; mem.[15] <- 0
+// LD 0, 1
+mem.[16] <- 1; mem.[17] <- 0; mem.[18] <- 1
+// LD 0, 2
+mem.[19] <- 1; mem.[20] <- 0; mem.[21] <- 2
+// ARGS 2
+mem.[22] <- 3; mem.[23] <- 2
+// APP
+mem.[24] <- 4
 // RTN
-mem.[15] <- 5
+mem.[25] <- 5
 
-// クロージャの持つ環境 (線形リスト、ここでは nil)
-mem.[16] <- 0
+// func B
+// env addr
+mem.[26] <- 36
+// LD 0, 0
+mem.[27] <- 1; mem.[28] <- 0; mem.[29] <- 0
+// LD 0, 1
+mem.[30] <- 1; mem.[31] <- 0; mem.[32] <- 1
+// SUB
+mem.[33] <- 10
+// RTN
+mem.[34] <- 5
 
-let mutable f = 17
+mem.[35] <- 0
+mem.[36] <- 0
+
+let mutable f = 37
 
 let write value =
     mem.[f] <- value
@@ -94,7 +115,7 @@ let executeLD () =
     printfn "%d" localVarIndex
 
     let frameAddr = getElemFromList e frameIndex
-    let localVar = getElemFromList frameAddr localVarIndex
+    let localVar = mem.[frameAddr + localVarIndex]
     push localVar
     c <- c + 1
 
@@ -200,6 +221,5 @@ let run () =
 [<EntryPoint>]
 let main _ =
     run ()
-    printfn "\n%A\n" mem
-    printfn "Result: %d" <| pop ()
+    printfn "Result: %i" <| pop ()
     0
