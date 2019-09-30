@@ -78,6 +78,12 @@ let getElemFromList addr index =
         i <- i + 1
     elem
 
+let prependElemToList (register : byref<int>) head =
+    let headAddr = f
+    write head
+    write register
+    register <- headAddr
+
 let executeLD () =
     printf "LD "
 
@@ -109,6 +115,26 @@ let executeARGS () =
     push argsAddr
     c <- c + 1
 
+let executeAPP () =
+    printfn "APP"
+    c <- c + 1
+    let args = pop ()
+    let closure = pop ()
+
+    let dump = f
+    let size = getStackSize ()
+    write size
+    for _ in 1 .. size do
+        write <| pop ()
+    write e
+    write c
+
+    prependElemToList &d dump
+    prependElemToList &e mem.[closure]
+    prependElemToList &e args
+
+    c <- closure + 1
+
 let run () =
     let mutable breakNow = false
     while not breakNow do
@@ -124,32 +150,7 @@ let run () =
         | 3 ->
             executeARGS ()
         | 4 ->
-            printfn "APP"
-            c <- c + 1
-            let args = pop ()
-            let closure = pop ()
-            let dump = f
-            let size = getStackSize ()
-            write size
-
-            for _ in 1 .. size do
-                write <| pop ()
-
-            write e
-            write c
-            let d' = f
-            write dump
-            write d
-            d <- d'
-            let e' = f
-            write mem.[closure]
-            write e
-            e <- e'
-            let e'' = f
-            write args
-            write e'
-            e <- e''
-            c <- closure + 1
+            executeAPP ()
         | 5 ->
             printfn "RTN"
             let dump = mem.[d]
