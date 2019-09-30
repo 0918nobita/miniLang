@@ -28,8 +28,8 @@ let clearStack () =
 
 // LDC 8
 mem.[0] <- 2; mem.[1] <- 8
-// LDC 2
-mem.[2] <- 2; mem.[3] <- 2
+// LDC 3
+mem.[2] <- 2; mem.[3] <- 3
 // ARGS 1
 mem.[4] <- 3; mem.[5] <- 1
 // APP
@@ -41,10 +41,10 @@ mem.[7] <- 0
 mem.[8] <- 17
 // LD 0, 0
 mem.[9] <- 1; mem.[10] <- 0; mem.[11] <- 0
-// LDC 1
-mem.[12] <- 2; mem.[13] <- 1
-// ADD
-mem.[14] <- 9
+// LDC 7
+mem.[12] <- 2; mem.[13] <- 7
+// MUL
+mem.[14] <- 10
 // RTN
 mem.[15] <- 5
 
