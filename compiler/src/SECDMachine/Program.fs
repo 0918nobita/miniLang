@@ -92,6 +92,13 @@ let executeLD () =
     push localVar
     c <- c + 1
 
+let executeLDC () =
+    printf "LDC "
+    let literal = advance ()
+    printfn "%d" literal
+    push literal
+    c <- c + 1
+
 let run () =
     let mutable breakNow = false
     while not breakNow do
@@ -103,12 +110,7 @@ let run () =
         | 1 ->
             executeLD ()
         | 2 ->
-            printf "LDC "
-            c <- c + 1
-            let n = mem.[c]
-            printfn "%d" n
-            push n
-            c <- c + 1
+            executeLDC ()
         | 3 ->
             printf "ARGS "
             c <- c + 1
