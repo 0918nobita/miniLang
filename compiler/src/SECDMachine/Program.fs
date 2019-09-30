@@ -29,11 +29,11 @@ let clearStack () =
 // LDC A(= 12)
 mem.[0] <- 2; mem.[1] <- 12
 // LDC B(= 26)
-mem.[2] <- 2; mem.[3] <- 7
+mem.[2] <- 2; mem.[3] <- 26
 // LDC 5
 mem.[4] <- 2; mem.[5] <- 5
 // LDC 7
-mem.[6] <- 2; mem.[7] <- 26
+mem.[6] <- 2; mem.[7] <- 7
 // ARGS 3
 mem.[8] <- 3; mem.[9] <- 3
 // APP
@@ -131,8 +131,11 @@ let executeARGS () =
     let length = advance ()
     printfn "%d" length
     let argsAddr = f
+    let args = Stack<int>()
     for _ in 1 .. length do
-        write <| pop ()
+        args.Push <| pop ()
+    for arg in args do
+        write arg
     push argsAddr
     c <- c + 1
 
@@ -193,26 +196,26 @@ let run () =
             c <- c + 1
         | 9 ->
             printfn "ADD"
-            let rhs = pop ()
             let lhs = pop ()
+            let rhs = pop ()
             push (lhs + rhs)
             c <- c + 1
         | 10 ->
             printfn "SUB"
-            let rhs = pop ()
             let lhs = pop ()
+            let rhs = pop ()
             push (lhs - rhs)
             c <- c + 1
         | 11 ->
             printfn "MUL"
-            let rhs = pop ()
             let lhs = pop ()
+            let rhs = pop ()
             push (lhs * rhs)
             c <- c + 1
         | 12 ->
             printfn "DIV"
-            let rhs = pop ()
             let lhs = pop ()
+            let rhs = pop ()
             push (lhs / rhs)
             c <- c + 1
         | _ ->
