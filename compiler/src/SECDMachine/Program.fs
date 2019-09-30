@@ -26,57 +26,53 @@ let getStackSize () =
 let clearStack () =
     sp <- 99999
 
-// LDC A(= 12)
-mem.[0] <- 2; mem.[1] <- 12
-// LDC B(= 26)
-mem.[2] <- 2; mem.[3] <- 26
-// LDC 5
-mem.[4] <- 2; mem.[5] <- 5
-// LDC 7
-mem.[6] <- 2; mem.[7] <- 7
-// ARGS 3
-mem.[8] <- 3; mem.[9] <- 3
-// APP
-mem.[10] <- 4
-// STOP
-mem.[11] <- 0
-
-// func A
-// env addr
-mem.[12] <- 35
-// LD 0, 0
-mem.[13] <- 1; mem.[14] <- 0; mem.[15] <- 0
-// LD 0, 1
-mem.[16] <- 1; mem.[17] <- 0; mem.[18] <- 1
-// LD 0, 2
-mem.[19] <- 1; mem.[20] <- 0; mem.[21] <- 2
-// ARGS 2
-mem.[22] <- 3; mem.[23] <- 2
-// APP
-mem.[24] <- 4
-// RTN
-mem.[25] <- 5
-
-// func B
-// env addr
-mem.[26] <- 36
-// LD 0, 0
-mem.[27] <- 1; mem.[28] <- 0; mem.[29] <- 0
-// LD 0, 1
-mem.[30] <- 1; mem.[31] <- 0; mem.[32] <- 1
-// SUB
-mem.[33] <- 10
-// RTN
-mem.[34] <- 5
-
-mem.[35] <- 0
-mem.[36] <- 0
-
-let mutable f = 37
+let mutable f = 0
 
 let write value =
     mem.[f] <- value
     f <- f + 1
+
+let STOP () = write 0
+
+let LD i j = write 1; write i; write j
+
+let LDC n = write 2; write n
+
+let ARGS n = write 3; write n
+
+let APP () = write 4
+
+let RTN () = write 5
+
+let SUB () = write 10
+
+let closureAPointer = f + 1
+LDC 0  // A
+let closureBPointer = f + 1
+LDC 0  // B
+LDC 5
+LDC 7
+ARGS 3
+APP ()
+STOP ()
+
+// Closure A
+mem.[closureAPointer] <- f
+write 0
+LD 0 0
+LD 0 2
+LD 0 1
+ARGS 2
+APP ()
+RTN ()
+
+// Closure B
+mem.[closureBPointer] <- f
+write 0
+LD 0 0
+LD 0 1
+SUB ()
+RTN ()
 
 let advance () =
     c <- c + 1
@@ -202,8 +198,8 @@ let run () =
             c <- c + 1
         | 10 ->
             printfn "SUB"
-            let lhs = pop ()
             let rhs = pop ()
+            let lhs = pop ()
             push (lhs - rhs)
             c <- c + 1
         | 11 ->
@@ -214,8 +210,8 @@ let run () =
             c <- c + 1
         | 12 ->
             printfn "DIV"
-            let lhs = pop ()
             let rhs = pop ()
+            let lhs = pop ()
             push (lhs / rhs)
             c <- c + 1
         | _ ->
