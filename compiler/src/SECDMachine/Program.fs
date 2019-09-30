@@ -177,10 +177,22 @@ let run () =
             push (lhs + rhs)
             c <- c + 1
         | 10 ->
+            printfn "SUB"
+            let rhs = pop ()
+            let lhs = pop ()
+            push (lhs - rhs)
+            c <- c + 1
+        | 11 ->
             printfn "MUL"
             let rhs = pop ()
             let lhs = pop ()
             push (lhs * rhs)
+            c <- c + 1
+        | 12 ->
+            printfn "DIV"
+            let rhs = pop ()
+            let lhs = pop ()
+            push (lhs / rhs)
             c <- c + 1
         | _ ->
             failwith "unknown opcode"
