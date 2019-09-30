@@ -53,6 +53,45 @@ mem.[16] <- 0
 
 let mutable f = 17
 
+let write value =
+    mem.[f] <- value
+    f <- f + 1
+
+let advance () =
+    c <- c + 1
+    mem.[c]
+
+let getElemFromList addr index =
+    let mutable i = 0
+    let mutable focusedAddr = addr
+    let mutable elem = 0
+    let mutable breakNow = false
+    while (not breakNow) do
+        if i = index
+            then
+                elem <- mem.[focusedAddr]
+                breakNow <- true
+            else
+                if mem.[focusedAddr + 1] <> 0
+                    then focusedAddr <- mem.[focusedAddr + 1]
+                    else failwith "線形リスト上の探索に失敗しました"
+        i <- i + 1
+    elem
+
+let executeLD () =
+    printf "LD "
+
+    let frameIndex = advance ()
+    printf "%d, " frameIndex
+
+    let localVarIndex = advance ()
+    printfn "%d" localVarIndex
+
+    let frameAddr = getElemFromList e frameIndex
+    let localVar = getElemFromList frameAddr localVarIndex
+    push localVar
+    c <- c + 1
+
 let run () =
     let mutable breakNow = false
     while not breakNow do
@@ -62,16 +101,7 @@ let run () =
             printfn "STOP"
             breakNow <- true
         | 1 ->
-            printf "LD "
-            c <- c + 1
-            let i = mem.[c]
-            printf "%d, " i
-            c <- c + 1
-            let j = mem.[c]
-            printfn "%d" j
-            let frame = mem.[e + i]
-            push mem.[frame + j]
-            c <- c + 1
+            executeLD ()
         | 2 ->
             printf "LDC "
             c <- c + 1
@@ -85,9 +115,10 @@ let run () =
             let length = mem.[c]
             printfn "%d" length
             let headAddr = f
+
             for _ in 1 .. length do
-                mem.[f] <- pop ()
-                f <- f + 1
+                write <| pop ()
+
             push headAddr
             c <- c + 1
         | 4 ->
@@ -97,34 +128,24 @@ let run () =
             let closure = pop ()
             let dump = f
             let size = getStackSize ()
-            mem.[f] <- size
-            f <- f + 1
+            write size
 
             for _ in 1 .. size do
-                mem.[f] <- pop ()
-                f <- f + 1
+                write <| pop ()
 
-            mem.[f] <- e
-            f <- f + 1
-            mem.[f] <- c
-            f <- f + 1
+            write e
+            write c
             let d' = f
-            mem.[f] <- dump
-            f <- f + 1
-            mem.[f] <- d
-            f <- f + 1
+            write dump
+            write d
             d <- d'
             let e' = f
-            mem.[f] <- mem.[closure]
-            f <- f + 1
-            mem.[f] <- e
-            f <- f + 1
+            write mem.[closure]
+            write e
             e <- e'
             let e'' = f
-            mem.[f] <- args
-            f <- f + 1
-            mem.[f] <- e'
-            f <- f + 1
+            write args
+            write e'
             e <- e''
             c <- closure + 1
         | 5 ->
