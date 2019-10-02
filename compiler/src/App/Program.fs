@@ -1,11 +1,14 @@
 ﻿open System
 open System.Collections.Generic
-open ParserCombinator
+// open ParserCombinator
 
+(*
 type ExprAST =
     | IntLiteral of loc : Location * value : int
+    | Ident of loc : Location * name : string
     | Minus of loc : Location * expr : ExprAST
     | InfixOp of loc : Location * name : string
+    | Apply of loc : Location * func : ExprAST * param : ExprAST
 
 let zero = char '0'
 
@@ -40,7 +43,9 @@ let identifier =
                 head :: (List.map snd cs)
                 |> List.toArray
                 |> String
-            succeed (loc, name)))
+            succeed <| Ident (loc, name)))
+
+let factor = (unary <*> nat) <|> identifier
 
 let infixOperator =
     some (oneOf "!$%&*+-./:<=>?@^|~")
@@ -50,6 +55,7 @@ let infixOperator =
             |> List.toArray
             |> String
         succeed <| InfixOp (fst (List.head cs), name))
+*)
 
 let opPriority =
     [("+", 2); ("-", 2); ("*", 3); ("/", 3)]
@@ -64,8 +70,8 @@ let getOpPriority token =
     |> snd
 
 type Tree =
-    | TInt of value : int
-    | TInfixApply of op : string * lhs : Tree * rhs : Tree
+    | IntLiteral of value : int
+    | InfixApply of op : string * lhs : Tree * rhs : Tree
 
 let parseExpr (expr : string) =
     let ops = Stack<string>() // 演算子のスタック
@@ -81,13 +87,13 @@ let parseExpr (expr : string) =
                     then
                         let right = terms.Pop()
                         let left = terms.Pop()
-                        terms.Push(TInfixApply (lastOp, left, right))
+                        terms.Push(InfixApply (lastOp, left, right))
                     else
                         ops.Push(lastOp)
                         breakNow <- true
             ops.Push(token)
         | token when fst <| Int32.TryParse(token) ->
-            terms.Push(TInt <| Int32.Parse(token))
+            terms.Push(IntLiteral <| Int32.Parse(token))
         | "(" ->
             ops.Push("(")
         | ")" ->
@@ -100,7 +106,7 @@ let parseExpr (expr : string) =
                     else
                         let right = terms.Pop()
                         let left = terms.Pop()
-                        terms.Push(TInfixApply (op, left, right))
+                        terms.Push(InfixApply (op, left, right))
         | _ -> failwith "Invalid expr")
     while ops.Count > 0 do
         let op = ops.Pop()
@@ -108,29 +114,13 @@ let parseExpr (expr : string) =
             then
                 let right = terms.Pop()
                 let left = terms.Pop()
-                terms.Push(TInfixApply (op, left, right))
+                terms.Push(InfixApply (op, left, right))
     terms.Pop()
 
 [<EntryPoint>]
 let main argv =
-    printfn "%A" <| parseExpr "( 1 + 2 * 3 + 4 )"
     if Array.isEmpty argv
         then -1
         else
-            try
-                let result = parse infixOperator (bof, argv.[0])
-
-                match result with
-                | Some { ast = ast; currentLoc = loc; rest = rest } ->
-                    printfn "Success!"
-                    printfn "ast: %A" <| ast
-                    printfn "currentLoc: %s" <| loc.ToString ()
-                    printfn "rest: \"%s\"" rest
-                    0
-                | None ->
-                    printfn "Failed..."
-                    -1
-            with
-            | ParserException (loc, f) ->
-                f loc
-                -1
+            printfn "%A" <| parseExpr argv.[0]
+            0
