@@ -8,3 +8,6 @@ _build
 *.cmi
 *.cmx
 *.cmo
+
+nuget.config
+*.nupkg
