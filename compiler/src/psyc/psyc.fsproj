@@ -16,6 +16,7 @@
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Argu" Version="5.5.0" />
     <PackageReference Include="FSharp.Json" Version="0.3.7" />
   </ItemGroup>
 </Project>
