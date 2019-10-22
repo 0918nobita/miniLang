@@ -44,15 +44,16 @@ let APP () = write 4
 
 let RTN () = write 5
 
+let SEL ct cf = write 6; write ct; write cf
+
+let JOIN () = write 7
+
 let SUB () = write 10
 
 let closureAPointer = f + 1
 LDC 0  // A
-let closureBPointer = f + 1
-LDC 0  // B
-LDC 5
-LDC 7
-ARGS 3
+LDC 0
+ARGS 1
 APP ()
 STOP ()
 
@@ -60,19 +61,16 @@ STOP ()
 mem.[closureAPointer] <- f
 write 0
 LD 0 0
-LD 0 2
-LD 0 1
-ARGS 2
-APP ()
+let ctPointer = f + 1
+let cfPointer = f + 2
+SEL 0 0
 RTN ()
-
-// Closure B
-mem.[closureBPointer] <- f
-write 0
-LD 0 0
-LD 0 1
-SUB ()
-RTN ()
+mem.[ctPointer] <- f
+LDC 2
+JOIN ()
+mem.[cfPointer] <- f
+LDC 3
+JOIN ()
 
 let advance () =
     c <- c + 1
@@ -186,6 +184,20 @@ let run () =
             push rv
             e <- mem.[dump + i + 1]
             c <- mem.[dump + i + 2]
+        | 6 ->
+            printf "SEL "
+            c <- c + 1
+            let ct = mem.[c]
+            printf "%d, " ct
+            c <- c + 1
+            let cf = mem.[c]
+            printfn "%d" cf
+            prependElemToList &d (c + 1)
+            c <- if pop () <> 0 then ct else cf
+        | 7 ->
+            printfn "JOIN"
+            c <- mem.[d]
+            d <- mem.[d + 1]
         | 8 ->
             printfn "DROP"
             ignore <| pop ()
