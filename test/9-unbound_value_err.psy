@@ -1,7 +1,0 @@
-pub fn main() {
-  2
-}
-
-pub fn sub() {
-  let x = 3 in y + x
-}

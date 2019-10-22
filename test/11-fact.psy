@@ -1,7 +1,0 @@
-pub fn main() {
-  fact(5)
-}
-
-fn fact(n) {
-  if n > 0 then n * fact(n - 1) else 1
-}

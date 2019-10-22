@@ -8,8 +8,6 @@ For more details about the language specification, see [wiki](https://github.com
 
 Made with ❤️ in Japan
 
-**WIP: We are working on migration from OCaml to F# !**
-
 ## Usage
 
 ```text

@@ -1,5 +1,0 @@
-pub fn foo() { 1 + 2 }
-
-pub fn bar() { 2 * 4 }
-
-pub fn baz() { 5 / 2 }

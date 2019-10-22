@@ -1,3 +1,0 @@
-  let x = 3 in y + x
-               ^
-6:16: Unbound value `y`

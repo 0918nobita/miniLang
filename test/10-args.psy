@@ -1,9 +1,0 @@
-pub fn main() {
-  let x = 2 in
-  sub(x) + x
-}
-
-fn sub(n) {
-  let y = 3 in
-  n + y
-}

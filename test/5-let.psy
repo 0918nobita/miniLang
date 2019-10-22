@@ -1,9 +1,0 @@
-pub fn main() {
-  let a = 3 in
-    let b = 4 in
-      a + b
-}
-
-pub fn sub() {
-  let foo = (let foo = 2 in foo + 1) in foo * 4
-}

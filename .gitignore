@@ -2,12 +2,5 @@ obj/
 bin/
 .ionide/
 
-_build
-*.o
-*.wasm
-*.cmi
-*.cmx
-*.cmo
-
 nuget.config
 *.nupkg
