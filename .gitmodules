@@ -1,3 +1,6 @@
 [submodule "compiler/psyc"]
 	path = compiler/psyc
 	url = git@github.com:0918nobita/psyc.git
+[submodule "compiler/psyvm"]
+	path = compiler/psyvm
+	url = git@github.com:0918nobita/psyvm.git
