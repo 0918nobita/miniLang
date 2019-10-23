@@ -1,0 +1,3 @@
+[submodule "compiler/psyc"]
+	path = compiler/psyc
+	url = git@github.com:0918nobita/psyc.git
