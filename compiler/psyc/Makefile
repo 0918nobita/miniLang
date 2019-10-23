@@ -1,6 +1,6 @@
 .PHONY: install
 install: nupkg/*.nupkg
-	dotnet tool install --global --add-source ./nupkg psyche
+	dotnet tool install --global --add-source ./nupkg psyc
 
 nupkg/*.nupkg:
 	dotnet pack --configuration Debug
