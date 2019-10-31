@@ -1,6 +1,0 @@
-[submodule "compiler/psyc"]
-	path = src/psyc
-	url = git@github.com:0918nobita/psyc.git
-[submodule "compiler/psyvm"]
-	path = src/psyvm
-	url = git@github.com:0918nobita/psyvm.git
