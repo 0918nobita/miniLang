@@ -8,6 +8,14 @@ type MaybeBuilder () =
     member this.Delay (f) = f ()
     member this.Return (x) = Some x
 
+type IntStringBuilder () =
+    member this.Bind (m : string, f) =
+        let (b, i) = System.Int32.TryParse (m)
+        match b with
+        | true -> f i
+        | false -> failwith "変換に失敗"
+    member this.Return (x) = x
+
 type MParsecBuilder () =
     member this.Bind (p, f) =
         {
@@ -35,7 +43,14 @@ let main argv =
         let! z = Some 33
         return x + y + z
     }
-    |> printfn "%A"
+    |> printfn "%A" // => 66
+
+    let intstring = IntStringBuilder()
+    intstring {
+        let! a = "3"
+        let! b = "4"
+        return a + b
+    } |> printfn "%A" // => 7
 
     // "ac" または "bc" を受理して、１文字目と "!" を結合した文字列を返すパーサ
     let parser = MParsecBuilder()
