@@ -1,5 +1,75 @@
 open ParserCombinator
 
+type Symbol = string
+
+type TypeSig =
+    | IntType
+    | BoolType
+    | FuncType of TypeSig * TypeSig
+
+type Ast =
+    | BoolLiteral of bool
+    | IntLiteral of int
+    | Add of Ast * Ast
+    | Sub of Ast * Ast
+    | Mov of Ast * Ast
+    | Div of Ast * Ast
+    | Variable of int
+    | Let of Ast * Ast
+    | Lambda of TypeSig * Ast
+    | App of Ast * Ast
+
+exception ParamTypeMismatchException of expected : TypeSig * actual : TypeSig
+
+exception CannotCallException of TypeSig
+
+let rec typeOfAst = function
+    | (_, BoolLiteral _) -> BoolType
+    | (_, IntLiteral _) -> IntType
+    | (env, Add (lhs, rhs))
+    | (env, Sub (lhs, rhs))
+    | (env, Mov (lhs, rhs))
+    | (env, Div (lhs , rhs)) ->
+        let typeOfLhs = typeOfAst (env, lhs)
+        if typeOfLhs <> IntType
+            then raise <| ParamTypeMismatchException (IntType, typeOfLhs)
+        let typeOfRhs = typeOfAst (env, rhs)
+        if typeOfRhs <> IntType
+            then raise <| ParamTypeMismatchException (IntType, typeOfRhs)
+        IntType
+    | (env : list<TypeSig>, Variable index) ->
+        env.[index]
+    | (env, Let (expr1, expr2)) ->
+        let typeOfExpr1 = typeOfAst (env, expr1)
+        typeOfAst (typeOfExpr1 :: env, expr2)
+    | (env, Lambda (paramType, expr)) ->
+        FuncType (IntType, typeOfAst (paramType :: env, expr))
+    | (env, App (func, param)) ->
+        let typeOfFunc = typeOfAst (env, func)
+        let typeOfParam = typeOfAst (env, param)
+        match typeOfFunc with
+        | FuncType (p, r) ->
+            if p = typeOfParam
+                then r
+                else raise <| ParamTypeMismatchException (p, typeOfParam)
+        | _ ->
+            raise <| CannotCallException typeOfFunc
+
+try
+    // (λ . 3 + #0) 4
+    let ast =
+        App (
+            Lambda (IntType, Add (IntLiteral 3, Variable 0)),
+            IntLiteral 4)
+    printfn "%A" (typeOfAst ([], ast))  // => IntType
+with
+| ParamTypeMismatchException (expected, actual) ->
+    printfn "(Param type mismatch) Expected: %A, Actual: %A" expected actual
+    exit 1
+| CannotCallException expr ->
+    printfn "(Cannot call) %A" expr
+    exit 1
+
 type MaybeBuilder () =
     member this.Bind (x, f) =
         match x with
@@ -34,6 +104,7 @@ type MParsecBuilder () =
 
 [<EntryPoint>]
 let main argv =
+    (*
     if Array.isEmpty argv then exit(1)
 
     let maybe = MaybeBuilder()
@@ -61,5 +132,5 @@ let main argv =
     }
     |> (fun p -> parse p (bof, argv.[0]))
     |> printfn "%A"
-
+    *)
     0
