@@ -4,15 +4,20 @@ on: [push, pull_request]
 
 jobs:
   test:
-    runs-on: ubuntu-latest
     strategy:
       matrix:
-        dotnet: ['2.2.401', '2.1.801']
+        dotnet-version: ['2.2.401']
+
+    runs-on: ubuntu-latest
+
     steps:
-    - name: check SHA
-      run: echo $GITHUB_SHA
-    - uses: actions/checkout@v1
-    - run: pwd && ls -la
-    - name: Setup dotnet
-      uses: actions/setup-dotnet@v1
-    - run: dotnet run --project src/Tests
+      - name: Checkout code
+        uses: actions/checkout@v1
+
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: ${{ matrix.dotnet-version }}
+
+      - name: Test package
+        run: dotnet run --project src/Tests
