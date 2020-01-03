@@ -1,6 +1,4 @@
-obj/
-bin/
-.ionide/
-
-nuget.config
-*.nupkg
+.merlin
+lib
+node_modules
+*.bs.js
