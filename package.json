@@ -2,18 +2,22 @@
   "name": "psyche",
   "version": "0.1.0",
   "scripts": {
-    "build": "bsb -make-world",
-    "start": "bsb -make-world -w",
-    "clean": "bsb -clean-world",
+    "build": "yarn build:reason && webpack",
+    "build:reason": "bsb -make-world",
     "format": "bsrefmt --in-place src/*.re"
   },
   "keywords": [
     "BuckleScript"
   ],
+  "bin": {
+    "psy": "dist/bundle.js"
+  },
   "author": "0918nobita <nobita.0918@gmail.com>",
   "license": "MIT",
   "private": true,
   "devDependencies": {
-    "bs-platform": "^7.0.1"
+    "bs-platform": "^7.0.1",
+    "webpack": "^4.41.5",
+    "webpack-cli": "^3.3.10"
   }
 }
