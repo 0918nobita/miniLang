@@ -1,0 +1,11 @@
+.github
+lib
+src
+node_modules
+
+.merlin
+bsconfig.json
+CONTRIBUTING.md
+webpack.config.js
+
+*.bs.js
