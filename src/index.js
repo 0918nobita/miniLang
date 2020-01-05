@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   const canvas = document.getElementById('glcanvas');
 
   const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
@@ -17,7 +17,36 @@ document.addEventListener('DOMContentLoaded', () => {
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
   // gl.viewport(...) で描画解像度を変更できる
+
+  const [vertexShader, fragmentShader] = await Promise.all(
+    [
+      loadShader(gl, gl.VERTEX_SHADER, 'vertex.glsl'),
+      loadShader(gl, gl.FRAGMENT_SHADER, 'fragment.glsl'),
+    ]
+  );
+
+  console.log({ vertexShader, fragmentShader });
 });
+
+
+async function loadShader(gl, shaderType, shaderFile) {
+  const shader = gl.createShader(shaderType);
+
+  const res = await fetch(shaderFile);
+  if (res.status !== 200) throw new Error('指定されたファイルが見つかりません');
+
+  const shaderSource = await res.text();
+
+  gl.shaderSource(shader, shaderSource);
+  gl.compileShader(shader);
+
+  if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+    throw new Error(`シェーダのコンパイルに失敗しました (${shaderFile})`);
+  }
+
+  return shader;
+}
+
 
 /*
   【WebGL とは】
