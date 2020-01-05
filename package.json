@@ -3,8 +3,10 @@
   "version": "0.1.0",
   "scripts": {
     "build": "yarn build:reason && webpack",
+    "build:prod": "yarn build:reason && webpack --mode production",
     "build:reason": "bsb -make-world",
-    "format": "bsrefmt --in-place src/*.re"
+    "format": "bsrefmt --in-place src/*.re",
+    "prepublishOnly": "yarn build:prod"
   },
   "keywords": [
     "BuckleScript"
