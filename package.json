@@ -1,5 +1,6 @@
 {
   "name": "psyche",
+  "description": "Programming Language",
   "version": "0.1.0",
   "scripts": {
     "build": "yarn build:reason && webpack",
