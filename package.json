@@ -20,6 +20,7 @@
   "private": true,
   "devDependencies": {
     "bs-platform": "^7.0.1",
+    "node-static": "^0.7.11",
     "webpack": "^4.41.5",
     "webpack-cli": "^3.3.10"
   },
