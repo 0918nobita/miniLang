@@ -24,20 +24,68 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   gl.useProgram(program);
 
-  const vertexPositionAttribute = gl.getAttribLocation(program, 'aVertexPosition');
-  gl.enableVertexAttribArray(vertexPositionAttribute);
-
-  // オブジェクトの頂点情報を収めるバッファを作成
-  const positionBuffer = gl.createBuffer();
-  // バッファをコンテキストに結びつける
-  gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-
-  const vertices = [ // 頂点配列
-    1.0,  1.0, 0.0,
-    -1.0, 1.0, 0.0,
-    1.0, -1.0, 0.0,
+  const vertices = [
+    1.0, 1.0, 0.0,
+    0.0, 0.0, 0.0,
+    2.0, 0.0, 0.0,
   ];
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+
+  const colors = [
+    1.0, 0.0, 0.0, 1.0,
+    0.0, 1.0, 0.0, 1.0,
+    0.0, 0.0, 1.0, 1.0,
+  ];
+
+  const index = [0, 1, 2];
+
+  const attrLocations = {
+    position: gl.getAttribLocation(program, 'position'),
+    color: gl.getAttribLocation(program, 'color'),
+  };
+
+  const vPosition = createVBO(gl, vertices);
+  const vColor = createVBO(gl, colors);
+  const ibo = createIBO(gl, index);
+
+  gl.bindBuffer(gl.ARRAY_BUFFER, vPosition);
+  gl.enableVertexAttribArray(attrLocations.position);
+  gl.vertexAttribPointer(
+    attrLocations.position, /* 頂点属性のインデックス */
+    3, /* １つの頂点情報のサイズ */
+    gl.FLOAT, /* 要素のデータ型 */
+    false, /* 渡された値を正規化しない */
+    0, /* 値のストライド */
+    0  /* バッファのどの位置から始まるか */
+  );
+
+  gl.bindBuffer(gl.ARRAY_BUFFER, vColor);
+  gl.enableVertexAttribArray(attrLocations.color);
+  gl.vertexAttribPointer(
+    attrLocations.color,
+    4,
+    gl.FLOAT,
+    false,
+    0,
+    0
+  );
+
+  const uniLocation = {
+    mvpMatrix: gl.getUniformLocation(program, 'mvpMatrix'),
+  };
+
+  gl.uniformMatrix4fv(
+    uniLocation.mvpMatrix,
+    false,
+    [
+      1, 0, 0, 0,
+      0, 1, 0, 0,
+      0, 0, 1, 0,
+      0, 0, 0, 1,
+    ]
+  );
+
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ibo);
+  gl.drawElements(gl.TRIANGLES, index.length, gl.UNSIGNED_SHORT, 0);
 
   // クリアカラーを黒色、不透明に設定する
   gl.clearColor(0.0, 0.0, 0.0, 1.0);
@@ -56,10 +104,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // gl.viewport(...) で描画解像度を変更できる
 
-  const fieldOfView = 45 * Math.PI / 180;
-  const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
-  const zNear = 0.1;
-  const zFar = 100.0;
+  gl.flush();
 });
 
 
@@ -75,10 +120,47 @@ async function loadShader(gl, shaderType, shaderFile) {
   gl.compileShader(shader);
 
   if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+    console.info(gl.getShaderInfoLog(shader));
     throw new Error(`シェーダのコンパイルに失敗しました (${shaderFile})`);
   }
 
   return shader;
+}
+
+
+// Vertex Buffer Object の作成
+function createVBO(gl, data) {
+  // バッファオブジェクトの作成
+  const vbo = gl.createBuffer();
+
+  // バッファをコンテキストにバインド
+  gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
+
+  // バインドしたバッファにデータを登録
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(data), gl.STATIC_DRAW);
+
+  // バインドしたバッファを解除
+  gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+  return vbo;
+}
+
+
+// Index Buffer Object の作成
+function createIBO(gl, data) {
+  // バッファオブジェクトの生成
+  const ibo = gl.createBuffer();
+
+  // バッファをコンテキストにバインド
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ibo);
+
+  // バインドしたバッファにデータを登録
+  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Int16Array(data), gl.STATIC_DRAW);
+
+  // バインドしたバッファを解除
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
+
+  return ibo;
 }
 
 
