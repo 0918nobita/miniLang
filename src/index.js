@@ -4,6 +4,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
   if (gl === null) return;
 
+  // シェーダプログラムの作成
+  const program = gl.createProgram();
+
+  // シェーダの取得とコンパイル
   const [vertexShader, fragmentShader] = await Promise.all(
     [
       loadShader(gl, gl.VERTEX_SHADER, 'vertex.glsl'),
@@ -11,44 +15,48 @@ document.addEventListener('DOMContentLoaded', async () => {
     ]
   );
 
-  // シェーダープログラムの作成
-  const program = gl.createProgram();
-
+  // シェーダプログラムにシェーダを追加する
   gl.attachShader(program, vertexShader);
   gl.attachShader(program, fragmentShader);
-  gl.linkProgram(program);
 
+  // アタッチされた頂点 / フラグメントシェーダをリンクする
+  gl.linkProgram(program);
   if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
     throw new Error('シェーダープログラムを初期化できません');
   }
 
+  // シェーダプログラムを使用可能な状態にする
   gl.useProgram(program);
 
-  const vertices = [
+  const vertices = [ // 頂点配列
     1.0, 1.0, 0.0,
     0.0, 0.0, 0.0,
     2.0, 0.0, 0.0,
   ];
 
-  const colors = [
+  const colors = [ // 色配列
     1.0, 0.0, 0.0, 1.0,
     0.0, 1.0, 0.0, 1.0,
     0.0, 0.0, 1.0, 1.0,
   ];
 
-  const index = [0, 1, 2];
+  const index = [0, 1, 2]; // インデックス配列
 
+  // 各 attribute のインデックスを取得
   const attrLocations = {
     position: gl.getAttribLocation(program, 'position'),
     color: gl.getAttribLocation(program, 'color'),
   };
 
+  // 各種バッファの作成
   const vPosition = createVBO(gl, vertices);
   const vColor = createVBO(gl, colors);
   const ibo = createIBO(gl, index);
 
   gl.bindBuffer(gl.ARRAY_BUFFER, vPosition);
+  // 通知先変数の有効化
   gl.enableVertexAttribArray(attrLocations.position);
+  // 実際に通知する
   gl.vertexAttribPointer(
     attrLocations.position, /* 頂点属性のインデックス */
     3, /* １つの頂点情報のサイズ */
