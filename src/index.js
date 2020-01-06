@@ -4,8 +4,46 @@ document.addEventListener('DOMContentLoaded', async () => {
   const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
   if (gl === null) return;
 
+  const [vertexShader, fragmentShader] = await Promise.all(
+    [
+      loadShader(gl, gl.VERTEX_SHADER, 'vertex.glsl'),
+      loadShader(gl, gl.FRAGMENT_SHADER, 'fragment.glsl'),
+    ]
+  );
+
+  // シェーダープログラムの作成
+  const program = gl.createProgram();
+
+  gl.attachShader(program, vertexShader);
+  gl.attachShader(program, fragmentShader);
+  gl.linkProgram(program);
+
+  if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+    throw new Error('シェーダープログラムを初期化できません');
+  }
+
+  gl.useProgram(program);
+
+  const vertexPositionAttribute = gl.getAttribLocation(program, 'aVertexPosition');
+  gl.enableVertexAttribArray(vertexPositionAttribute);
+
+  // オブジェクトの頂点情報を収めるバッファを作成
+  const positionBuffer = gl.createBuffer();
+  // バッファをコンテキストに結びつける
+  gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+
+  const vertices = [ // 頂点配列
+    1.0,  1.0, 0.0,
+    -1.0, 1.0, 0.0,
+    1.0, -1.0, 0.0,
+  ];
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+
   // クリアカラーを黒色、不透明に設定する
   gl.clearColor(0.0, 0.0, 0.0, 1.0);
+
+  // 全消去
+  gl.clearDepth(1.0);
 
   // 深度テストを有効化
   gl.enable(gl.DEPTH_TEST);
@@ -18,14 +56,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // gl.viewport(...) で描画解像度を変更できる
 
-  const [vertexShader, fragmentShader] = await Promise.all(
-    [
-      loadShader(gl, gl.VERTEX_SHADER, 'vertex.glsl'),
-      loadShader(gl, gl.FRAGMENT_SHADER, 'fragment.glsl'),
-    ]
-  );
-
-  console.log({ vertexShader, fragmentShader });
+  const fieldOfView = 45 * Math.PI / 180;
+  const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
+  const zNear = 0.1;
+  const zFar = 100.0;
 });
 
 
