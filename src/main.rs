@@ -5,20 +5,9 @@ extern crate serde_derive;
 
 use std::fs;
 
-#[derive(Serialize)]
-struct Header {
-    magic_cookie: u32,
-    version: u32,
-}
+mod header;
 
-impl Default for Header {
-    fn default() -> Self {
-        Header {
-            magic_cookie: 0x6d736100, // .asm
-            version: 1,
-        }
-    }
-}
+use header::Header;
 
 fn main() {
     println!("Psyche compiler 0.1.0");
