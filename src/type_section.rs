@@ -8,7 +8,7 @@ impl Default for TypeSection {
     }
 }
 
-#[derive(PartialEq)]
+#[derive(Clone, PartialEq)]
 pub struct FuncType {
     pub params: Vec<PrimitiveType>,
     pub result: Option<PrimitiveType>,
@@ -34,11 +34,11 @@ impl Into<u8> for PrimitiveType {
 }
 
 impl TypeSection {
-    pub fn add_type(&mut self, func_type: FuncType) -> u8 {
-        if let Some(i) = self.types.iter().position(|x| *x == func_type) {
+    pub fn add_type(&mut self, func_type: &FuncType) -> u8 {
+        if let Some(i) = self.types.iter().position(|x| *x == *func_type) {
             i as u8
         } else {
-            self.types.push(func_type);
+            self.types.push(func_type.clone());
             (self.types.len() - 1) as u8
         }
     }
@@ -70,5 +70,26 @@ impl TypeSection {
         serialized[1] = serialized.len() as u8 - 2; // FIXUP section size
 
         serialized
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::{FuncType, PrimitiveType, TypeSection};
+
+    #[test]
+    fn it_works() {
+        let mut section: TypeSection = Default::default();
+        let func_type_0 = FuncType {
+            params: vec![PrimitiveType::I32, PrimitiveType::I64],
+            result: Some(PrimitiveType::F64),
+        };
+        let func_type_1 = FuncType {
+            params: vec![PrimitiveType::F32, PrimitiveType::I32],
+            result: None,
+        };
+        assert_eq!(section.add_type(&func_type_0), 0);
+        assert_eq!(section.add_type(&func_type_1), 1);
+        assert_eq!(section.add_type(&func_type_0), 0);
     }
 }
