@@ -1,5 +1,5 @@
 pub struct TypeSection {
-    pub types: Vec<FuncType>,
+    types: Vec<FuncType>,
 }
 
 impl Default for TypeSection {
@@ -8,12 +8,13 @@ impl Default for TypeSection {
     }
 }
 
+#[derive(PartialEq)]
 pub struct FuncType {
     pub params: Vec<PrimitiveType>,
     pub result: Option<PrimitiveType>,
 }
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, PartialEq)]
 pub enum PrimitiveType {
     I32,
     I64,
@@ -33,6 +34,15 @@ impl Into<u8> for PrimitiveType {
 }
 
 impl TypeSection {
+    pub fn add_type(&mut self, func_type: FuncType) -> u8 {
+        if let Some(i) = self.types.iter().position(|x| *x == func_type) {
+            i as u8
+        } else {
+            self.types.push(func_type);
+            (self.types.len() - 1) as u8
+        }
+    }
+
     pub fn serialize(&self) -> Vec<u8> {
         let mut serialized: Vec<u8> = vec![
             1,                      // section code

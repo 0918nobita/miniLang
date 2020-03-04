@@ -24,16 +24,25 @@ fn main() {
     let func_section: FuncSection = Default::default();
 
     // type[0] (i32, i64) -> [f64]
-    type_section.types.push(FuncType {
+    let i = type_section.add_type(FuncType {
         params: vec![PrimitiveType::I32, PrimitiveType::I64],
         result: Some(PrimitiveType::F64),
     });
+    println!("(1) function index: {}", i);
 
     // type[1] (f32, i32) -> nil
-    type_section.types.push(FuncType {
+    let i = type_section.add_type(FuncType {
         params: vec![PrimitiveType::F32, PrimitiveType::I32],
         result: None,
     });
+    println!("(2) function index: {}", i);
+
+    // shoud be ignored
+    let i = type_section.add_type(FuncType {
+        params: vec![PrimitiveType::I32, PrimitiveType::I64],
+        result: Some(PrimitiveType::F64),
+    });
+    println!("(3) function index: {}", i);
 
     let mut encoded_header = bincode::serialize(&header).unwrap();
     let mut encoded_type_section = type_section.serialize();
