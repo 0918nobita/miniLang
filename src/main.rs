@@ -13,15 +13,27 @@ mod type_section;
 use func_section::FuncSection;
 use header::Header;
 use import_section::ImportSection;
-use type_section::TypeSection;
+use type_section::{FuncType, PrimitiveType, TypeSection};
 
 fn main() {
     println!("Psyche compiler 0.1.0");
 
     let header: Header = Default::default();
-    let type_section: TypeSection = Default::default();
+    let mut type_section: TypeSection = Default::default();
     let import_section: ImportSection = Default::default();
     let func_section: FuncSection = Default::default();
+
+    // type[0] (i32, i64) -> [f64]
+    type_section.types.push(FuncType {
+        params: vec![PrimitiveType::I32, PrimitiveType::I64],
+        result: Some(PrimitiveType::F64),
+    });
+
+    // type[1] (f32, i32) -> nil
+    type_section.types.push(FuncType {
+        params: vec![PrimitiveType::F32, PrimitiveType::I32],
+        result: None,
+    });
 
     let mut encoded_header = bincode::serialize(&header).unwrap();
     let mut encoded_type_section = type_section.serialize();
