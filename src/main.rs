@@ -24,7 +24,7 @@ fn main() {
     let func_section: FuncSection = Default::default();
 
     let mut encoded_header = bincode::serialize(&header).unwrap();
-    let mut encoded_type_section = bincode::serialize(&type_section).unwrap();
+    let mut encoded_type_section = type_section.serialize();
     let mut encoded_import_section = bincode::serialize(&import_section).unwrap();
     let mut encoded_func_section = func_section.serialize();
 
