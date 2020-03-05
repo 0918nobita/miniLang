@@ -8,6 +8,12 @@ For more details about the language specification, see [wiki](https://github.com
 
 Made with ❤️ in Japan
 
+## Build
+
+```bash
+cargo build
+```
+
 ## License
 
 This software is released under the MIT License, see LICENSE.
