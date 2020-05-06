@@ -1,0 +1,41 @@
+0000000: 0061 736d                                 ; WASM_BINARY_MAGIC
+0000004: 0100 0000                                 ; WASM_BINARY_VERSION
+; section "Type" (1)
+0000008: 01                                        ; section code
+0000009: 00                                        ; section size (guess)
+000000a: 01                                        ; num types
+; type 0
+000000b: 60                                        ; func
+000000c: 01                                        ; num params
+000000d: 7e                                        ; i64
+000000e: 01                                        ; num results
+000000f: 7c                                        ; f64
+0000009: 06                                        ; FIXUP section size
+; section "Function" (3)
+0000010: 03                                        ; section code
+0000011: 00                                        ; section size (guess)
+0000012: 01                                        ; num functions
+0000013: 00                                        ; function 0 signature index
+0000011: 02                                        ; FIXUP section size
+; section "Export" (7)
+0000014: 07                                        ; section code
+0000015: 00                                        ; section size (guess)
+0000016: 01                                        ; num exports
+0000017: 03                                        ; string length
+0000018: 6164 64                                  add  ; export name
+000001b: 00                                        ; export kind
+000001c: 00                                        ; export func index
+0000015: 07                                        ; FIXUP section size
+; section "Code" (10)
+000001d: 0a                                        ; section code
+000001e: 00                                        ; section size (guess)
+000001f: 01                                        ; num functions
+; function body 0
+0000020: 00                                        ; func body size (guess)
+0000021: 00                                        ; local decl count
+0000022: 20                                        ; local.get
+0000023: 00                                        ; local index
+0000024: bf                                        ; f64.reinterpret_i64
+0000025: 0b                                        ; end
+0000020: 05                                        ; FIXUP func body size
+000001e: 07                                        ; FIXUP section size
