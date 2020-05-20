@@ -1,6 +1,9 @@
 name: Lint
 
 on:
+  push:
+    branches:
+      - develop
   pull_request:
     types: [opened, synchronize]
 
@@ -14,6 +17,6 @@ jobs:
         with:
           dotnet-version: 3.0.100
       - name: Restore dotnet tools
-        run: dotnet restore tools
+        run: dotnet tool restore
       - name: Exec fantomas
         run: dotnet fantomas --recurse --check ./src
