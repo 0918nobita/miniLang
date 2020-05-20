@@ -1,0 +1,12 @@
+version 5.245.1
+source https://api.nuget.org/v3/index.json
+
+nuget FSharp.Core
+nuget Argu
+nuget FParsec
+
+// [ FAKE GROUP ]
+group Build
+    source https://api.nuget.org/v3/index.json
+    nuget Fake.Core.Target
+    nuget Fake.DotNet.Cli

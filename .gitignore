@@ -1,9 +1,17 @@
-target
-.yarn
-yarn-error.log
+# FAKE
+.fake/
 
-# Created by https://www.gitignore.io/api/vim,linux,macos,emacs,windows,visualstudiocode
-# Edit at https://www.gitignore.io/?templates=vim,linux,macos,emacs,windows,visualstudiocode
+# Ionide
+.ionide/
+
+# Paket dependency manager
+.paket/
+paket-files/
+packages/
+
+
+# Created by https://www.gitignore.io/api/windows,macos,linux,vim,emacs,visualstudiocode,fsharp
+# Edit at https://www.gitignore.io/?templates=windows,macos,linux,vim,emacs,visualstudiocode,fsharp
 
 ### Emacs ###
 # -*- mode: gitignore; -*-
@@ -55,6 +63,18 @@ flycheck_*.el
 # network security
 /network-security.data
 
+
+### fsharp ###
+lib/debug
+lib/release
+Debug
+*.suo
+*.user
+obj
+bin
+/build/
+*.exe
+!.paket/paket.bootstrapper.exe
 
 ### Linux ###
 
@@ -159,4 +179,4 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
-# End of https://www.gitignore.io/api/vim,linux,macos,emacs,windows,visualstudiocode
+# End of https://www.gitignore.io/api/windows,macos,linux,vim,emacs,visualstudiocode,fsharp
