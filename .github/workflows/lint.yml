@@ -1,0 +1,19 @@
+name: Lint
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 3.0.100
+      - name: Restore dotnet tools
+        run: dotnet restore tools
+      - name: Exec fantomas
+        run: dotnet fantomas --recurse --check ./src
