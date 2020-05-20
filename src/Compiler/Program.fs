@@ -1,4 +1,6 @@
-﻿open Argu
+module Program
+
+open Argu
 open FParsec
 
 [<EntryPoint>]
