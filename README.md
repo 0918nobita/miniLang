@@ -39,6 +39,12 @@ dotnet fake build -t release
 dotnet run --project src/Compiler
 ```
 
+## Test
+
+```bash
+dotnet fake build -t test
+```
+
 ## References
 
 ### [Paket](https://fsprojects.github.io/Paket/index.html)
