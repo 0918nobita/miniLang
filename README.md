@@ -36,7 +36,7 @@ dotnet fake build -t release
 ## Run
 
 ```bash
-dotnet run --project src/Compiler
+dotnet run --project src/Compiler # --no-build
 ```
 
 ## Test
