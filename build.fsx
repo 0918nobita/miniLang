@@ -26,6 +26,12 @@ Target.create "Release" (fun _ ->
             { options with
                   Configuration = DotNet.Release })))
 
+let dotnet cmd arg = DotNet.exec id cmd arg |> ignore
+
+Target.create "Format" (fun _ ->
+    dotnet "fantomas" "--recurse ./src"
+    dotnet "fantomas" "--recurse ./tests")
+
 let testProjects = [ "ParserTest" ]
 
 Target.create "Test" (fun _ ->
