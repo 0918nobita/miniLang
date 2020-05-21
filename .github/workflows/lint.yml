@@ -19,4 +19,6 @@ jobs:
       - name: Restore dotnet tools
         run: dotnet tool restore
       - name: Exec fantomas
-        run: dotnet fantomas --recurse --check ./src
+        run: |
+          dotnet fantomas --recurse --check ./src
+          dotnet fantomas --recurse --check ./tests
