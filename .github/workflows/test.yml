@@ -22,17 +22,14 @@ jobs:
       with:
         dotnet-version: ${{ matrix.dotnet }}
 
-    - name: Test
-      if: runner.os != 'Windows'
-      run: bash ./ci-scripts/test.sh
-      env:
-        # Work around https://github.com/actions/setup-dotnet/issues/29
-        DOTNET_ROOT: ${{ runner.tool_cache }}/dncs/${{ matrix.dotnet }}/x64
-        CI: true
+    - name: Restore dotnet tools
+      run: dotnet tool restore
 
-    - name: Test
-      if: runner.os == 'Windows'
-      run: ./ci-scripts/test.cmd
+    - name: Restore Paket
+      run: dotnet paket restore
+
+    - name: Run tests
+      run: dotnet fake -v build -t test
       env:
         # Work around https://github.com/actions/setup-dotnet/issues/29
         DOTNET_ROOT: ${{ runner.tool_cache }}/dncs/${{ matrix.dotnet }}/x64
