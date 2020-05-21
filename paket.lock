@@ -3,13 +3,22 @@ NUGET
     Argu (6.0)
       FSharp.Core (>= 4.3.2) - restriction: >= netstandard2.0
       System.Configuration.ConfigurationManager (>= 4.4) - restriction: >= netstandard2.0
+    Expecto (9.0)
+      FSharp.Core (>= 4.6) - restriction: || (>= net461) (>= netstandard2.0)
+      Mono.Cecil (>= 0.11.2) - restriction: || (>= net461) (>= netstandard2.0)
+    Expecto.FsCheck (9.0)
+      Expecto (>= 9.0) - restriction: || (>= net461) (>= netstandard2.0)
+      FsCheck (>= 2.14.2) - restriction: || (>= net461) (>= netstandard2.0)
     FParsec (1.1.1)
       FSharp.Core (>= 4.3.4) - restriction: || (>= net45) (>= netstandard2.0)
       System.ValueTuple (>= 4.4) - restriction: >= net45
+    FsCheck (2.14.2) - restriction: || (>= net461) (>= netstandard2.0)
+      FSharp.Core (>= 4.2.3) - restriction: || (>= net452) (>= netstandard1.6)
     FSharp.Core (4.7.1)
     Microsoft.NETCore.Platforms (3.1.1) - restriction: || (&& (>= net461) (>= netcoreapp2.1)) (>= netcoreapp2.0) (&& (>= netcoreapp2.1) (< netcoreapp3.0))
     Microsoft.Win32.SystemEvents (4.7) - restriction: >= netcoreapp3.0
       Microsoft.NETCore.Platforms (>= 3.1) - restriction: >= netcoreapp2.0
+    Mono.Cecil (0.11.2) - restriction: || (>= net461) (>= netstandard2.0)
     System.Buffers (4.5.1) - restriction: || (&& (< monoandroid) (< net45) (< netcoreapp2.0) (>= netstandard2.0) (< xamarinios) (< xamarinmac)) (&& (< monoandroid) (< netstandard1.1) (>= netstandard2.0) (< win8)) (&& (>= monotouch) (>= netstandard2.0)) (&& (< net46) (>= net461) (>= netstandard2.0)) (&& (< netstandard1.1) (>= netstandard2.0) (>= win8)) (&& (>= netstandard2.0) (>= xamarintvos)) (&& (>= netstandard2.0) (>= xamarinwatchos))
     System.Configuration.ConfigurationManager (4.7) - restriction: >= netstandard2.0
       System.Security.Cryptography.ProtectedData (>= 4.7) - restriction: && (< monoandroid) (< net461) (>= netstandard2.0) (< xamarinios) (< xamarinmac)
@@ -118,10 +127,20 @@ NUGET
       FSharp.Core (>= 4.7.1) - restriction: >= netstandard2.0
       Newtonsoft.Json (>= 12.0.3) - restriction: >= netstandard2.0
       NuGet.Protocol (>= 5.5.1) - restriction: >= netstandard2.0
+    Fake.DotNet.Testing.Expecto (5.20)
+      Fake.Core.Process (>= 5.20) - restriction: >= netstandard2.0
+      Fake.Core.String (>= 5.20) - restriction: >= netstandard2.0
+      Fake.Core.Trace (>= 5.20) - restriction: >= netstandard2.0
+      Fake.IO.FileSystem (>= 5.20) - restriction: >= netstandard2.0
+      Fake.Testing.Common (>= 5.20) - restriction: >= netstandard2.0
+      FSharp.Core (>= 4.7.1) - restriction: >= netstandard2.0
     Fake.IO.FileSystem (5.20) - restriction: >= netstandard2.0
       Fake.Core.String (>= 5.20) - restriction: >= netstandard2.0
       FSharp.Core (>= 4.7.1) - restriction: >= netstandard2.0
     Fake.Net.Http (5.20) - restriction: >= netstandard2.0
+      Fake.Core.Trace (>= 5.20) - restriction: >= netstandard2.0
+      FSharp.Core (>= 4.7.1) - restriction: >= netstandard2.0
+    Fake.Testing.Common (5.20) - restriction: >= netstandard2.0
       Fake.Core.Trace (>= 5.20) - restriction: >= netstandard2.0
       FSharp.Core (>= 4.7.1) - restriction: >= netstandard2.0
     FParsec (1.1.1) - restriction: >= netstandard2.0
