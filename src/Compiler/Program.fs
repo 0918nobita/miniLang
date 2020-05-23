@@ -37,11 +37,14 @@ let rec parseBuildCmd (baseOptions: BuildOptions) =
     function
     | [] -> baseOptions
 
-    | (DoubleDash name) :: xs when name = "verbose" -> parseBuildCmd (setVerbose baseOptions) xs
+    | (DoubleDash name) :: xs when name = "verbose" ->
+        parseBuildCmd (setVerbose baseOptions) xs
     | (Dash name) :: xs when name = "v" -> parseBuildCmd (setVerbose baseOptions) xs
 
-    | (DoubleDash name) :: (NotOption as out) :: xs when name = "out" -> parseBuildCmd (setOut baseOptions out) xs
-    | (Dash name) :: (NotOption as out) :: xs when name = "o" -> parseBuildCmd (setOut baseOptions out) xs
+    | (DoubleDash name) :: (NotOption as out) :: xs when name = "out" ->
+        parseBuildCmd (setOut baseOptions out) xs
+    | (Dash name) :: (NotOption as out) :: xs when name = "o" ->
+        parseBuildCmd (setOut baseOptions out) xs
 
     | str :: _ -> failwith ("parse error: " + str)
 
