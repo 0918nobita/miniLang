@@ -1,43 +1,61 @@
 module Program
 
-open Argu
 open System
+open System.Text.RegularExpressions
 
-type BuildArgs =
-    | [<AltCommandLine("-o")>] Out of string
-    | [<AltCommandLine("-v")>] Verbose
-    interface IArgParserTemplate with
-        member this.Usage =
-            match this with
-            | Out _ -> "Specify output file"
-            | Verbose -> "Print a lot of output to stdout"
+type BuildOptions =
+    { Verbose: Boolean
+      Out: String }
 
-type HelpArgs =
-    | [<CliPrefix(CliPrefix.None); Hidden>] Build
-    interface IArgParserTemplate with
-        member this.Usage =
-            match this with
-            | Build -> ""
+type Command =
+    | Build of BuildOptions
+    | Version
+    | Help
 
-type Arguments =
-    | [<CliPrefix(CliPrefix.None)>] Build of ParseResults<BuildArgs>
-    | [<CliPrefix(CliPrefix.None); Hidden>] Help of ParseResults<HelpArgs>
-    interface IArgParserTemplate with
-        member this.Usage =
-            match this with
-            | Build -> "Compile packages and dependencies"
-            | Help -> ""
+let (|Dash|_|) (input: string) =
+    let m = Regex.Match(input, @"^-([a-zA-Z]+)$")
+    if m.Success then Some(m.Groups.[1].Value) else None
+
+let (|DoubleDash|_|) (input: string) =
+    let m = Regex.Match(input, @"^--([a-zA-Z]+)$")
+    if m.Success then Some(m.Groups.[1].Value) else None
+
+let (|NotOption|_|) (input: string) =
+    let dash = Regex.Match(input, @"^-([a-zA-Z]+)$")
+    let doubleDash = Regex.Match(input, @"^--([a-zA-Z]+)$")
+    if not dash.Success && not doubleDash.Success
+    then Some()
+    else None
+
+let rec parseBuildCmd (baseOption: BuildOptions) =
+    function
+    | [] -> baseOption
+
+    | (DoubleDash name) :: xs when name = "verbose" -> parseBuildCmd { baseOption with Verbose = true } xs
+    | (Dash name) :: xs when name = "v" -> parseBuildCmd { baseOption with Verbose = true } xs
+
+    | (DoubleDash name) :: (NotOption as dir) :: xs when name = "out" ->
+        parseBuildCmd { baseOption with Out = dir } xs
+    | (Dash name) :: (NotOption as dir) :: xs when name = "o" -> parseBuildCmd { baseOption with Out = dir } xs
+
+    | str :: _ -> failwith ("parse error: " + str)
+
+let defaultBuildOptions: BuildOptions =
+    { Verbose = false
+      Out = "./out.wasm" }
+
+let rec parseCmd =
+    function
+    | "build" :: xs -> Build <| parseBuildCmd defaultBuildOptions xs
+    | "version" :: _ -> Version
+    | "help" :: _ -> Help
+    | (DoubleDash x) :: xs ->
+        printfn "specified general option: %s" x
+        parseCmd xs
+    | x :: _ -> failwith (sprintf "Unknown subcommand %s" x)
+    | _ -> Help
 
 [<EntryPoint>]
 let main argv =
-    let errorHandler =
-        ProcessExiter
-            (colorizer =
-                function
-                | ErrorCode.HelpText -> None
-                | _ -> Some ConsoleColor.Red)
-
-    let parser = ArgumentParser.Create<Arguments>(programName = "psy.exe", errorHandler = errorHandler)
-    let results = parser.ParseCommandLine argv
-    printfn "Results: %A" <| results.GetAllResults()
+    printfn "%A" <| parseCmd (Array.toList argv)
     0
