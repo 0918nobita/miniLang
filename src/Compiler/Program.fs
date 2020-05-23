@@ -12,18 +12,22 @@ type Command =
     | Version
     | Help
 
+let dashPattern = @"^-([a-zA-Z]+)$"
+
+let doubleDashPattern = @"^--([a-zA-Z]+)$"
+
 let (|Dash|_|) (input: string) =
-    let m = Regex.Match(input, @"^-([a-zA-Z]+)$")
+    let m = Regex.Match(input, dashPattern)
     if m.Success then Some(m.Groups.[1].Value) else None
 
 let (|DoubleDash|_|) (input: string) =
-    let m = Regex.Match(input, @"^--([a-zA-Z]+)$")
+    let m = Regex.Match(input, doubleDashPattern)
     if m.Success then Some(m.Groups.[1].Value) else None
 
 let (|NotOption|_|) (input: string) =
-    let dash = Regex.Match(input, @"^-([a-zA-Z]+)$")
-    let doubleDash = Regex.Match(input, @"^--([a-zA-Z]+)$")
-    if not dash.Success && not doubleDash.Success
+    let m1 = Regex.Match(input, dashPattern)
+    let m2 = Regex.Match(input, doubleDashPattern)
+    if not m1.Success && not m2.Success
     then Some()
     else None
 
