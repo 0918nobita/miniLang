@@ -27,20 +27,21 @@ let (|DoubleDash|_|) (input: string) =
 let (|NotOption|_|) (input: string) =
     let m1 = Regex.Match(input, dashPattern)
     let m2 = Regex.Match(input, doubleDashPattern)
-    if not m1.Success && not m2.Success
-    then Some()
-    else None
+    if not m1.Success && not m2.Success then Some() else None
 
-let rec parseBuildCmd (baseOption: BuildOptions) =
+let setOut (options: BuildOptions) (out: string) = { options with Out = out }
+
+let setVerbose (options: BuildOptions) = { options with Verbose = true }
+
+let rec parseBuildCmd (baseOptions: BuildOptions) =
     function
-    | [] -> baseOption
+    | [] -> baseOptions
 
-    | (DoubleDash name) :: xs when name = "verbose" -> parseBuildCmd { baseOption with Verbose = true } xs
-    | (Dash name) :: xs when name = "v" -> parseBuildCmd { baseOption with Verbose = true } xs
+    | (DoubleDash name) :: xs when name = "verbose" -> parseBuildCmd (setVerbose baseOptions) xs
+    | (Dash name) :: xs when name = "v" -> parseBuildCmd (setVerbose baseOptions) xs
 
-    | (DoubleDash name) :: (NotOption as dir) :: xs when name = "out" ->
-        parseBuildCmd { baseOption with Out = dir } xs
-    | (Dash name) :: (NotOption as dir) :: xs when name = "o" -> parseBuildCmd { baseOption with Out = dir } xs
+    | (DoubleDash name) :: (NotOption as out) :: xs when name = "out" -> parseBuildCmd (setOut baseOptions out) xs
+    | (Dash name) :: (NotOption as out) :: xs when name = "o" -> parseBuildCmd (setOut baseOptions out) xs
 
     | str :: _ -> failwith ("parse error: " + str)
 
