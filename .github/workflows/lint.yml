@@ -23,5 +23,5 @@ jobs:
 
       - name: Exec fantomas
         run: |
-          dotnet fantomas --recurse --check ./src
-          dotnet fantomas --recurse --check ./tests
+          dotnet fantomas --recurse --check --pageWidth 90 ./src
+          dotnet fantomas --recurse --check --pageWidth 90 ./tests

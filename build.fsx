@@ -29,8 +29,8 @@ Target.create "Release" (fun _ ->
 let dotnet cmd arg = DotNet.exec id cmd arg |> ignore
 
 Target.create "Format" (fun _ ->
-    dotnet "fantomas" "--recurse ./src"
-    dotnet "fantomas" "--recurse ./tests")
+    dotnet "fantomas" "--recurse --pageWidth 90 ./src"
+    dotnet "fantomas" "--recurse --pageWidth 90 ./tests")
 
 let testProjects = [ "ParserTest" ]
 
