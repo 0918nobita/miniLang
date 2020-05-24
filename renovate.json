@@ -1,7 +1,7 @@
 {
     "extends": ["config:base"],
     "timezone": "Asia/Tokyo",
-    "assignees": ["@0918nobia"],
+    "assignees": ["@0918nobita"],
     "labels": ["dependencies :package:"],
     "enabledManagers": ["npm"],
     "packageRules": [
