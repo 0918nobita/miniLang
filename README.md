@@ -10,7 +10,7 @@ Made with ❤️ in Japan
 
 ## Requirements
 
-- .NET Core Version 3 or newer
+- .NET Core 3.1
 
 ## Setup
 
