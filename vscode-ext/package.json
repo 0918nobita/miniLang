@@ -2,7 +2,11 @@
 	"name": "psycode",
 	"displayName": "psycode",
 	"description": "Psyche language support",
-	"publisher": "nobita0918",
+  "publisher": "nobita0918",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/0918nobita/psyche.git"
+  },
 	"version": "0.1.0",
 	"license": "MIT",
 	"engines": {
