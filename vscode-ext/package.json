@@ -1,7 +1,7 @@
 {
 	"name": "psycode",
 	"displayName": "psycode",
-	"description": "Psyche Language Server",
+	"description": "Psyche language support",
 	"publisher": "nobita0918",
 	"version": "0.1.0",
 	"license": "MIT",
