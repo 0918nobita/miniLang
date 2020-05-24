@@ -1,8 +1,8 @@
 {
 	"name": "psycode",
 	"displayName": "psycode",
-  "description": "Psyche Language Server",
-  "publisher": "Kodai Matsumoto",
+	"description": "Psyche Language Server",
+	"publisher": "Kodai Matsumoto",
 	"version": "0.1.0",
 	"license": "MIT",
 	"engines": {
@@ -12,7 +12,8 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:psycode.helloWorld"
+		"onCommand:psycode.helloWorld",
+		"onCommand:psycode.generateFile"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
@@ -20,14 +21,18 @@
 			{
 				"command": "psycode.helloWorld",
 				"title": "Hello World"
+			},
+			{
+				"command": "psycode.generateFile",
+				"title": "Generate File"
 			}
 		]
 	},
 	"scripts": {
 		"vscode:prepublish": "yarn run build",
 		"build": "tsc -p ./",
-    "lint": "eslint src --ext ts",
-    "format": "yarn lint --fix",
+		"lint": "eslint src --ext ts",
+		"format": "yarn lint --fix",
 		"watch": "yarn build --watch",
 		"test": "node ./out/test/runTest.js"
 	},
@@ -44,5 +49,8 @@
 		"mocha": "^7.1.2",
 		"typescript": "^3.8.3",
 		"vscode-test": "^1.3.0"
+	},
+	"dependencies": {
+		"dayjs": "^1.8.27"
 	}
 }
