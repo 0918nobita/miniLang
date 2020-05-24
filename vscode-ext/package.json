@@ -1,7 +1,8 @@
 {
 	"name": "psycode",
 	"displayName": "psycode",
-	"description": "Psyche Language Server",
+  "description": "Psyche Language Server",
+  "publisher": "Kodai Matsumoto",
 	"version": "0.1.0",
 	"license": "MIT",
 	"engines": {
