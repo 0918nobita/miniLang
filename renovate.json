@@ -3,5 +3,11 @@
     "timezone": "Asia/Tokyo",
     "assignees": ["@0918nobia"],
     "labels": ["dependencies :package:"],
-    "enabledManagers": ["npm"]
+    "enabledManagers": ["npm"],
+    "packageRules": [
+        {
+            "updateTypes": ["pin", "digest"],
+            "automerge": true
+        }
+    ]
 }
