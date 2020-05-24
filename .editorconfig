@@ -3,5 +3,8 @@ end_of_line = lf
 indent_style = space
 indent_size = 4
 
-[*.{fsproj,json,wat,yml}]
+[*.{fsproj,wat,yml}]
+indent_size = 2
+
+[package.json]
 indent_size = 2
