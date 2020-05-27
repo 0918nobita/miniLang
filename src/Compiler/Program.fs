@@ -1,69 +1,42 @@
 module Program
 
-open System
-open System.Text.RegularExpressions
+open System.Reflection
+open FSharp.CommandLine
 
-type BuildOptions =
-    { Verbose: Boolean
-      Out: String }
+let outputOption =
+    commandOption {
+        names [ "o"; "out" ]
+        description "Specify output file"
+        takes (format ("%s"))
+        suggests (fun _ -> [ CommandSuggestion.Files None ])
+    }
 
-type Command =
-    | Build of BuildOptions
-    | Version
-    | Help
+type Verbosity =
+    | Quiet
+    | Normal
+    | Full
 
-let dashPattern = @"^-([a-zA-Z]+)$"
+let verbosityOption =
+    commandOption {
+        names [ "v"; "verbosity" ]
+        description "Display this amount of information in the log"
+        takes (regex @"q(uiet)?$" |> asConst Quiet)
+        takes (regex @"n(ormal)?$" |> asConst Quiet)
+        takes (regex @"f(ull)?$" |> asConst Full)
+    }
 
-let doubleDashPattern = @"^--([a-zA-Z]+)$"
-
-let (|Dash|_|) (input: string) =
-    let m = Regex.Match(input, dashPattern)
-    if m.Success then Some(m.Groups.[1].Value) else None
-
-let (|DoubleDash|_|) (input: string) =
-    let m = Regex.Match(input, doubleDashPattern)
-    if m.Success then Some(m.Groups.[1].Value) else None
-
-let (|NotOption|_|) (input: string) =
-    let m1 = Regex.Match(input, dashPattern)
-    let m2 = Regex.Match(input, doubleDashPattern)
-    if not m1.Success && not m2.Success then Some() else None
-
-let setOut (options: BuildOptions) (out: string) = { options with Out = out }
-
-let setVerbose (options: BuildOptions) = { options with Verbose = true }
-
-let rec parseBuildCmd (baseOptions: BuildOptions) =
-    function
-    | [] -> baseOptions
-
-    | (DoubleDash name) :: xs when name = "verbose" ->
-        parseBuildCmd (setVerbose baseOptions) xs
-    | (Dash name) :: xs when name = "v" -> parseBuildCmd (setVerbose baseOptions) xs
-
-    | (DoubleDash name) :: (NotOption as out) :: xs when name = "out" ->
-        parseBuildCmd (setOut baseOptions out) xs
-    | (Dash name) :: (NotOption as out) :: xs when name = "o" ->
-        parseBuildCmd (setOut baseOptions out) xs
-
-    | str :: _ -> failwith ("parse error: " + str)
-
-let defaultBuildOptions: BuildOptions =
-    { Verbose = false
-      Out = "./out.wasm" }
-
-let rec parseCmd =
-    function
-    | "build" :: xs -> Build <| parseBuildCmd defaultBuildOptions xs
-    | "version" :: _ -> Version
-    | "help" :: _ -> Help
-    | (DoubleDash x) :: xs ->
-        printfn "specified general option: %s" x
-        parseCmd xs
-    | x :: _ -> failwith (sprintf "Unknown subcommand %s" x)
-    | _ -> Help
+let mainCmd =
+    let version = Assembly.GetExecutingAssembly().GetName().Version
+    command {
+        name "psyche"
+        description (sprintf "the psyche language compiler version %O" version)
+        opt files in outputOption |> CommandOption.zeroOrMore
+        opt verbosity in verbosityOption
+                         |> CommandOption.zeroOrExactlyOne
+                         |> CommandOption.whenMissingUse Normal
+        do printfn "%A, %A" files verbosity
+        return 0
+    }
 
 [<EntryPoint>]
-let main argv =
-    printfn "%A" <| parseCmd (Array.toList argv)
-    0
+let main argv = Command.runAsEntryPoint argv mainCmd
