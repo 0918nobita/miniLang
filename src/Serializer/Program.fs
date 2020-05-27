@@ -1,4 +1,4 @@
-﻿module Program
+module Program
 
 open Microsoft.FSharp.Reflection
 
