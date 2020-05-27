@@ -3,7 +3,6 @@ source https://api.nuget.org/v3/index.json
 
 nuget FSharp.Core
 
-nuget Argu
 nuget FParsec
 
 nuget Expecto
