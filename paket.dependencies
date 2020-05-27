@@ -4,6 +4,7 @@ source https://api.nuget.org/v3/index.json
 nuget FSharp.Core
 
 nuget FParsec
+nuget FSharp.CommandLine
 
 nuget Expecto
 nuget Expecto.FsCheck
