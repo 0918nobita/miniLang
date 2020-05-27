@@ -36,6 +36,7 @@ let mainCmd =
                          |> CommandOption.whenMissingUse Normal
         do printfn "%A, %A" files verbosity
         do Parser.runIdentParser()
+        do WasmGen.generate()
         return 0
     }
 
