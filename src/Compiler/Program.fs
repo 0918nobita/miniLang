@@ -35,6 +35,7 @@ let mainCmd =
                          |> CommandOption.zeroOrExactlyOne
                          |> CommandOption.whenMissingUse Normal
         do printfn "%A, %A" files verbosity
+        do Parser.runIdentParser()
         return 0
     }
 
