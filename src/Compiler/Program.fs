@@ -36,6 +36,10 @@ let mainCmd =
                          |> CommandOption.whenMissingUse Normal
         do printfn "%A, %A" files verbosity
         do Parser.runIdentParser()
+        let (_, _, v) =
+            Eval.evalDecl Eval.initialEnv
+                (Syntax.Expr(Syntax.BinExpr(Syntax.Plus, Syntax.ILit 3, Syntax.ILit 4)))
+        do printfn "%O" v
         do WasmGen.generate()
         return 0
     }
