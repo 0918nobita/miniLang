@@ -7,14 +7,14 @@ type BinOp =
     | Mult
     | Lt
 
-type Exp =
+type Expr =
     | Var of Ident
     | ILit of int
     | BLit of bool
-    | BinExp of op: BinOp * lhs: Exp * rhs: Exp
-    | IfExp of cond: Exp * _then: Exp * _else: Exp
+    | BinExpr of op: BinOp * lhs: Expr * rhs: Expr
+    | IfExpr of cond: Expr * _then: Expr * _else: Expr
 
-type Program = Exp of Exp
+type Program = Expr of Expr
 
 type TyVar = int
 
