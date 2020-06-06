@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="Syntax.fs" />
     <Compile Include="Parser.fs" />
     <Compile Include="WasmGen.fs" />
     <Compile Include="Program.fs" />
