@@ -21,7 +21,19 @@ type Inst =
     | Add
     | Eq
 
+open System.Text.RegularExpressions
+
+let parse (src : string) =
+    let lines = src.Split('\n')
+    lines
+    |> Array.iter
+        (fun line ->
+            let matches = Regex("^(\w+) (\w+)$").Match(line)
+            printfn "Result: %s" (if matches.Success then "success" else "failed")
+            printfn "(1) %s" <| matches.Groups.Item(1).Value
+            printfn "(2) %s" <| matches.Groups.Item(2).Value)
+
 [<EntryPoint>]
 let main argv =
-    printfn "Hello World from F#!"
+    parse (argv.[0])
     0
