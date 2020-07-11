@@ -1,4 +1,6 @@
-﻿/// CAM の命令
+﻿module Program
+
+/// CAM の命令
 type Inst =
     /// 整数をスタックに積む
     | Ldi of int
