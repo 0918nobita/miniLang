@@ -1,4 +1,4 @@
-﻿module Program
+module Program
 
 /// CAM の命令
 type Inst =
@@ -25,15 +25,14 @@ type Inst =
 
 open System.Text.RegularExpressions
 
-let parse (src : string) =
+let parse (src: string) =
     let lines = src.Split('\n')
     lines
-    |> Array.iter
-        (fun line ->
-            let matches = Regex("^(\w+) (\w+)$").Match(line)
-            printfn "Result: %s" (if matches.Success then "success" else "failed")
-            printfn "(1) %s" <| matches.Groups.Item(1).Value
-            printfn "(2) %s" <| matches.Groups.Item(2).Value)
+    |> Array.iter (fun line ->
+        let matches = Regex("^(\w+) (\w+)$").Match(line)
+        printfn "Result: %s" (if matches.Success then "success" else "failed")
+        printfn "(1) %s" <| matches.Groups.Item(1).Value
+        printfn "(2) %s" <| matches.Groups.Item(2).Value)
 
 [<EntryPoint>]
 let main argv =
