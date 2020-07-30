@@ -50,7 +50,7 @@
 		"eslint": "7.5.0",
 		"eslint-plugin-simple-import-sort": "5.0.3",
 		"glob": "7.1.6",
-		"mocha": "8.0.1",
+		"mocha": "8.1.0",
 		"typescript": "3.9.7",
 		"vscode-test": "1.4.0"
 	},
